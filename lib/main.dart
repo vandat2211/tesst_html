@@ -65,6 +65,16 @@ class _MyHomePageState extends State<MyHomePage> {
   TextEditingController controller =TextEditingController();
   final List<Question> _questions = [
     Question(
+      questionText: 'The _ is the king of the jungle',
+      type: 'sound',
+      correctAnswer: 'lion',
+    ),
+    Question(
+      questionText: 'a convenient mode of transportation',
+      type: 'sound',
+      correctAnswer: 'The bus',
+    ),
+    Question(
       questionText: 'What is 2 + 2?',
       correctAnswer: '4',
     ),
@@ -198,7 +208,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // TODO: implement initState
     super.initState();
     initTts();
-    _questions.shuffle();
+    // _questions.shuffle();
   }
   Future<void> initTts() async {
     await flutterTts.setLanguage('en-US'); // Đặt ngôn ngữ là tiếng Anh (hoặc ngôn ngữ bạn muốn sử dụng)
@@ -253,7 +263,6 @@ class _MyHomePageState extends State<MyHomePage> {
       Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             SimpleAnimationProgressBar(
@@ -269,32 +278,40 @@ class _MyHomePageState extends State<MyHomePage> {
               gradientColor: const LinearGradient(
                   colors: [Colors.pink, Colors.purple]),
             ),
-            SizedBox(height: 20),
-            _currentIndex == _questions.length
-              ?
-            Text(
-              'Quiz completed! You got $_correctAnswers out of ${_questions.length} correct.',
-              style: TextStyle(fontSize: 18),
-            ):Column(
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  _currentIndex == _questions.length
+                      ?
                   Text(
-                    _questions[_currentIndex].questionText,
+                    'Quiz completed! You got $_correctAnswers out of ${_questions.length} correct.',
                     style: TextStyle(fontSize: 18),
-                  ),
-                  SizedBox(height: 20),
-                  _questions[_currentIndex].imageContent!=""?Container(
-                    padding: const EdgeInsets.all(10),
-                    color: Colors.yellow,
-                    width: MediaQuery.of(context).size.width*0.5,
-                    height: 100,
-                    child: Image.asset("assets/images/${_questions[_currentIndex].imageContent??""}"),
-                  ):Container(),
-                  SizedBox(height: 20),
-                  if (_questions[_currentIndex].type=="sort" ) _generateOptions_sort(),
-                  if (_questions[_currentIndex].type=="choose" ) _generateOptions_choose(),
-                  if (_questions[_currentIndex].type=="text" ||_questions[_currentIndex].type=="image")..._generateOptions(_questions[_currentIndex].correctAnswer),
+                  ):Column(
+                    children: [
+                      Text(
+                        _questions[_currentIndex].questionText,
+                        style: TextStyle(fontSize: 18),
+                      ),
+                      SizedBox(height: 20),
+                      _questions[_currentIndex].imageContent!=""?Container(
+                        padding: const EdgeInsets.all(10),
+                        color: Colors.yellow,
+                        width: MediaQuery.of(context).size.width*0.5,
+                        height: 100,
+                        child: Image.asset("assets/images/${_questions[_currentIndex].imageContent??""}"),
+                      ):Container(),
+                      SizedBox(height: 20),
+                      if (_questions[_currentIndex].type=="sort" ) _generateOptions_sort(),
+                      if (_questions[_currentIndex].type=="choose" ) _generateOptions_choose(),
+                      if (_questions[_currentIndex].type=="text" ||_questions[_currentIndex].type=="image")..._generateOptions(_questions[_currentIndex].correctAnswer),
+                      if(_questions[_currentIndex].type=="sound") _generateOptions_sound()
+                    ],
+                  )
                 ],
-              )
+              ),
+            ),
+
           ],
         ),
       ),
@@ -397,6 +414,26 @@ class _MyHomePageState extends State<MyHomePage> {
           onSubmitted: (text){
             if(text==_questions[_currentIndex].correctAnswer){
               setState(() {
+                _correctAnswers++;
+                _currentIndex++;
+              });
+            }
+          },
+        )
+      ],
+    );
+  }
+  Widget _generateOptions_sound(){
+    return Column(
+      children: [
+       IconButton( onPressed: () { speak(_questions[_currentIndex].correctAnswer); }, icon: const Icon(Icons.speaker,size: 30,),),
+        SizedBox(height: 20,),
+        TextField(
+          controller: controller,
+          onSubmitted: (text){
+            if(text==_questions[_currentIndex].correctAnswer){
+              setState(() {
+                controller.clear();
                 _correctAnswers++;
                 _currentIndex++;
               });
