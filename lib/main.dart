@@ -208,7 +208,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // TODO: implement initState
     super.initState();
     initTts();
-    // _questions.shuffle();
+    _questions.shuffle();
   }
   Future<void> initTts() async {
     await flutterTts.setLanguage('en-US'); // Đặt ngôn ngữ là tiếng Anh (hoặc ngôn ngữ bạn muốn sử dụng)
@@ -237,6 +237,42 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> speak(String text) async {
     await flutterTts.speak(text); // Phát âm từ vừa nhận được
+  }
+  void _showDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Thông báo"),
+          content: Text("Bạn đã trả lời sai, bạn có muốn chơi lại không?"),
+          actions: <Widget>[
+            TextButton(
+              child: Text("OK"),
+              onPressed: () {
+                setState(() {
+                  _currentIndex = 0;
+                  _correctAnswers = 0;
+                  _questions.shuffle();
+                });
+                Navigator.of(context).pop(); // Đóng Dialog
+              },
+            ),
+            TextButton(
+              child: Text("Cancel"),
+              onPressed: () {
+                setState(() {
+                  _currentIndex = 0;
+                  _correctAnswers = 0;
+                  _questions.shuffle();
+                });
+                // Thực hiện hành động khi người dùng chọn Cancel
+                Navigator.of(context).pop(); // Đóng Dialog
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
   @override
   Widget build(BuildContext context) {
@@ -334,6 +370,8 @@ class _MyHomePageState extends State<MyHomePage> {
               answers.addAll(_answers);
                 _currentIndex++;
             });
+          }else{
+            _showDialog(context);
           }
           // Chuyển sang câu hỏi tiếp theo
 
@@ -386,6 +424,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   if(combinedWords == _questions[_currentIndex].correctAnswer){
                     _correctAnswers++;
                     _currentIndex++;
+                  }else if(combinedWords.length>_questions[_currentIndex].correctAnswer.length){
+                    _showDialog(context);
+                    list1.addAll(list);
+                    list.clear();
                   }
                 });
               },
@@ -414,9 +456,13 @@ class _MyHomePageState extends State<MyHomePage> {
           onSubmitted: (text){
             if(text==_questions[_currentIndex].correctAnswer){
               setState(() {
+                controller.clear();
                 _correctAnswers++;
                 _currentIndex++;
               });
+            }else if(text.isNotEmpty){
+              controller.clear();
+              _showDialog(context);
             }
           },
         )
@@ -431,12 +477,15 @@ class _MyHomePageState extends State<MyHomePage> {
         TextField(
           controller: controller,
           onSubmitted: (text){
-            if(text==_questions[_currentIndex].correctAnswer){
+            if(text.toLowerCase()==_questions[_currentIndex].correctAnswer.toLowerCase()){
               setState(() {
                 controller.clear();
                 _correctAnswers++;
                 _currentIndex++;
               });
+            }else if(text.isNotEmpty){
+              controller.clear();
+              _showDialog(context);
             }
           },
         )
