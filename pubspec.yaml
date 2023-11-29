@@ -50,6 +50,13 @@ dev_dependencies:
   page_flip: ^0.1.0
   flutter_tts: ^3.8.1
   simple_animation_progress_bar: ^1.6.0
+  fl_chart: ^0.63.0
+  firebase_core: ^2.15.0
+  firebase_messaging: ^14.6.5
+  flutter_local_notifications: ^15.1.2
+  fbroadcast: ^2.0.0
+  shared_preferences: ^2.2.0
+  google_books_api: ^1.0.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
