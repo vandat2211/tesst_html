@@ -6,7 +6,7 @@ import 'package:fbroadcast/fbroadcast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-import '../share_prefer.dart';
+import '../constants/share_prefer.dart';
 import 'notification_handler.dart';
 class FirebaseNotifications {
    FirebaseMessaging _messaging =FirebaseMessaging.instance  ;

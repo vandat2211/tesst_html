@@ -3,6 +3,7 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  firebase_core
   flutter_tts
   simple_animation_progress_bar
 )

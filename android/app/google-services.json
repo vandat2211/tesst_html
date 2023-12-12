@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "473879439905",
+    "project_id": "base-fcb86",
+    "storage_bucket": "base-fcb86.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:473879439905:android:5086cc3dc5ad6164f41160",
+        "android_client_info": {
+          "package_name": "com.example.tesst_html"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBKCsfznYamKEnygqJrWb2DXClaIDPNpK4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
