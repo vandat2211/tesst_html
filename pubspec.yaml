@@ -35,16 +35,6 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
-
-dev_dependencies:
-  flutter_test:
-    sdk: flutter
-
-  # The "flutter_lints" package below contains a set of recommended lints to
-  # encourage good coding practices. The lint set provided by the package is
-  # activated in the `analysis_options.yaml` file located at the root of your
-  # package. See that file for information about deactivating specific lint
-  # rules and activating additional ones.
   flutter_lints: ^2.0.0
   flip_card: ^0.7.0
   page_flip: ^0.1.0
@@ -66,7 +56,25 @@ dev_dependencies:
   http: ^0.13.5
   image:
   firebase_database: ^10.3.8
+  scroll_to_index: ^3.0.1
+  fluttertoast: ^8.0.3
+  intl: ^0.17.0
+  week_of_year: ^2.2.0
+  connectivity_plus: ^5.0.2
 
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  # The "flutter_lints" package below contains a set of recommended lints to
+  # encourage good coding practices. The lint set provided by the package is
+  # activated in the `analysis_options.yaml` file located at the root of your
+  # package. See that file for information about deactivating specific lint
+  # rules and activating additional ones.
+  flutter_native_splash: ^2.3.1
+flutter_native_splash:
+  image: assets/flutter.png
+  color: "f3f3f3"
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 

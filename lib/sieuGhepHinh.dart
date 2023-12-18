@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:image/image.dart' as image;
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 class SieuGhepHinhScreen extends StatefulWidget {
   const SieuGhepHinhScreen({super.key});
 
@@ -312,7 +313,7 @@ class _SlidePuzzleWidgetState extends State<SlidePuzzleWidget> {
   SlideObject getEmptyObject() {
     return slideObjects!.firstWhere((element) => element.empty);
   }
-  changePos(int indexCurrent,bool isReversePuzzle){
+  changePos(int indexCurrent,bool isReversePuzzle) async {
 // problem here i think..
     SlideObject slideObjectEmpty = getEmptyObject();
 
@@ -382,8 +383,12 @@ class _SlidePuzzleWidgetState extends State<SlidePuzzleWidget> {
       if(isReversePuzzle && widget.sizePuzzle<=5){
         widget.voidCallback();
         generatePuzzle();
-
       }
+      SharedPreferences pref = await SharedPreferences.getInstance();
+        int  id =  pref.getInt("SGH")??0;
+        id = id + 1;
+        await pref.setInt("SGH", id);
+
     } else {
       success = false;
     }

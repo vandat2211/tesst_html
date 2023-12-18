@@ -36,3 +36,48 @@ class Question {
     };
   }
 }
+class User {
+  final String id;
+  final String name;
+  final String point;
+  User({
+    required this.id,
+    required this.name,
+    required this.point
+  });
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
+      id: json['id'] ?? '',
+     name: json['name']??"",
+      point: json['point']??"",
+    );
+  }
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name':name,
+      "point":point
+    };
+  }
+}
+class Mes {
+  final String idTB;
+  final String title;
+  final String body;
+  final String time;
+  final String timeSeen;
+  final bool isSeen;
+
+  Mes({required this.title, required this.body, required this.time,required this.isSeen,required this.idTB,required this.timeSeen});
+
+  factory Mes.fromJson(Map<String, dynamic> json) {
+    return Mes(
+      idTB: json['idTB'] ?? '',
+      title: json['title'] ?? '',
+      body: json['body'] ?? '',
+      time:json['time'] ?? '',
+      isSeen: json['isSeen'] ?? false,
+      timeSeen: json['timeSeen'] ?? '',
+    );
+  }
+}

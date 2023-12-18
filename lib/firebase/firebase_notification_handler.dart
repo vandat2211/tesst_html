@@ -1,12 +1,16 @@
 
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:fbroadcast/fbroadcast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constants/share_prefer.dart';
+import '../models/question.dart';
 import 'notification_handler.dart';
 class FirebaseNotifications {
    FirebaseMessaging _messaging =FirebaseMessaging.instance  ;
@@ -40,8 +44,21 @@ class FirebaseNotifications {
         .whenComplete(() => print("Subcribe ok"));
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       FBroadcast.instance().broadcast("FLUTTER_NOTIFICATION_CLICK");
-      print("onMessage: $message");
-      showNotification(message.data['title'], message.data['body']);
+      print("onMessage: ${message.data['body']}");
+      showNotification(message.notification?.title, message.notification?.body);
+      SharedPreferences pref = await SharedPreferences.getInstance();
+      String id =  pref.getString("id")??"";
+      String formattedDate = DateFormat('dd/MM/yyyy').format(DateTime.now());
+      int timestamp = DateTime.now().millisecondsSinceEpoch;
+      DatabaseReference ref = FirebaseDatabase.instance.ref("users/$id/listTB/$timestamp");
+      await ref.set({
+        'idTB':"$timestamp",
+        "title":message.notification?.title,
+        "body":message.notification?.body,
+        "time":formattedDate,
+        "timeSeen":"",
+        "isSeen":false
+      });
     });
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
       await SharePreferUtils.getAccessToken().then((value) {
