@@ -2,13 +2,15 @@ import 'dart:convert';
 
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:week_of_year/week_of_year.dart';
 
-import 'chartPage.dart';
-import 'core_toast.dart';
-import 'models/question.dart';
+import '../components/chartPage.dart';
+import '../components/core_toast.dart';
+import '../components/widget/buttonCustom.dart';
+import '../models/question.dart';
 
 class ProFileScreen extends StatefulWidget {
   const ProFileScreen({super.key});
@@ -23,6 +25,7 @@ class _ProFileScreenState extends State<ProFileScreen> {
   String link = "ic_vneid_v.png";
    int percentDHBC = 0,percentDHBCST = 0,percentEL = 0,percentSGH = 0,percentSTT = 0;
    List<double> listLineChart =[];
+   bool ispageView = true;
   FocusNode focusNode = FocusNode();
   @override
   void initState() {
@@ -146,36 +149,47 @@ class _ProFileScreenState extends State<ProFileScreen> {
               ],
             ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.transparent,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(5)),
-                  ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal:15 ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: ButtonCusTom(
+                    title: 'Đổi avata', onPressed: (){
+                    showCustomDialog(context,true);
+                  },),
                 ),
-                onPressed: () async {
-                  showCustomDialog(context,true);
-                }, child: Text("Đổi avata"),),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.transparent,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(5)),
-                  ),
-                ),
-                onPressed: () async {
-                  showCustomDialog(context,false);
-                }, child: Text("Đổi ten"),)
-            ],
+                SizedBox(width: 20,),
+                Expanded(
+                  child: ButtonCusTom(
+                    title: 'Đổi tên', onPressed: (){
+                    showCustomDialog(context,false);
+                  },),
+                )
+              ],
+            ),
           ),
           Expanded(
-            child: PageView(
+            child: Stack(
               children: [
-                ChartPage(isLineChart: false, listDLPie: [percentDHBC.toDouble(),percentDHBCST.toDouble(),percentEL.toDouble(),percentSGH.toDouble(),percentSTT.toDouble()], listDLLine: [],),
-                ChartPage(isLineChart: true, listDLPie: [], listDLLine: listLineChart,)
+                PageView(
+                  onPageChanged: (index){
+                    setState(() {
+                      ispageView = !ispageView;
+                    });
+                  },
+                  children: [
+                    ChartPage(isLineChart: false, listDLPie: [percentDHBC.toDouble(),percentDHBCST.toDouble(),percentEL.toDouble(),percentSGH.toDouble(),percentSTT.toDouble()], listDLLine: [],),
+                    ChartPage(isLineChart: true, listDLPie: [], listDLLine: listLineChart,)
+                  ],
+                ),
+                Visibility(
+                  visible: ispageView,
+                  child: Positioned(
+                  right: 3,
+                      top: 150,
+                      child: Icon(Icons.arrow_forward_ios)),
+                )
               ],
             ),
           )

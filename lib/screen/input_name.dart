@@ -23,7 +23,7 @@ class _InputNameState extends State<InputName> {
     return SafeArea(child: Scaffold(
       body: Container(
         decoration: BoxDecoration(
-          image: DecorationImage(image: AssetImage("assets/images/flutter.png"),fit: BoxFit.contain)
+          image: DecorationImage(image: AssetImage("assets/images/bg.jpg"),fit: BoxFit.cover)
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -93,6 +93,7 @@ class _InputNameState extends State<InputName> {
                   await ref.set({
                     "id":"$timestamp",
                     "name": controller.text,
+                    "point":"0"
                   });
                 }
 

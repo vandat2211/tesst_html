@@ -5,17 +5,16 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:rive/rive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tesst_html/notifityPage.dart';
-import 'package:tesst_html/profile.dart';
+import 'package:tesst_html/screen/notifityPage.dart';
+import 'package:tesst_html/screen/profile.dart';
 import 'package:week_of_year/date_week_extensions.dart';
-import '/resources/app_colors.dart';
 import '/utils/rive_utils.dart';
 import '/components/animated_bar.dart';
 import '/models/rive_asset.dart';
 import 'bxh.dart';
-import 'firebase/firebase_notification_handler.dart';
+import '../firebase/firebase_notification_handler.dart';
 import 'home.dart';
-import 'models/question.dart';
+import '../models/question.dart';
 
 
 class MenuScreen extends StatefulWidget {

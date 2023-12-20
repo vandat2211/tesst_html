@@ -1,15 +1,19 @@
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:http/http.dart' as http;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'core_toast.dart';
+import 'components/core_toast.dart';
 import 'firebase/notification_handler.dart';
-import 'input_name.dart';
-import 'menu.dart';
+import 'screen/input_name.dart';
+import 'screen/menu.dart';
+import 'package:workmanager/workmanager.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 @pragma('vm:entry-point')
 
@@ -39,7 +43,74 @@ Future<void> main() async {
   FirebaseMessaging.onBackgroundMessage(fcmBackgroundMessageHandler);
   SharedPreferences pref = await SharedPreferences.getInstance();
   String id =  pref.getString("id")??"";
+  pref.remove("leverEL");
     runApp( MyApp(check:id.isNotEmpty?true:false ,));
+  // Initialize the workmanager plugin
+  Workmanager().initialize(
+    // Define a callback function to handle the periodic task
+    callbackDispatcher,
+    // Set the isInDebugMode to true for testing
+    isInDebugMode: true,
+  );
+  // Register a periodic task to run every 24 hours
+  Workmanager().registerPeriodicTask(
+    // Give the task a unique name
+    'sendNotificationTask',
+    // Give the task a unique tag
+    'sendNotificationTag',
+    // Set the frequency to 24 hours
+    frequency: Duration(hours: 24),
+    // Set the initial delay to 8 hours
+    initialDelay: Duration(hours: 8),
+    // Set the constraints for the task
+    constraints: Constraints(
+      networkType: NetworkType.connected,
+    ),
+  );
+}
+void callbackDispatcher() {
+  // Create a Workmanager object
+  Workmanager().executeTask((task, inputData) {
+    // Call the sendNotification function
+    sendNotification();
+    // Return true to indicate the task is successful
+    return Future.value(true);
+  });
+}
+void sendNotification() async {
+  // Get the server key from Firebase console
+  String serverKey = 'AAAAblVqaiE:APA91bFW9mRx80KMG-LoXDShBFdLpV2ySyaSQzm-yO-tPdZsU4tbhAzOligccmgaTaBgOIIhdMDIg7ls8LQl6BcovRD7SQ1XleYNIs1ovx1MPbdfswyIncWQZQwypddN7T5XgLxPlVXH';
+
+  // Get the device token from FirebaseMessaging
+  String deviceToken = await FirebaseMessaging.instance.getToken()??"";
+
+  // Create the request body
+  Map<String, dynamic> body = {
+    'notification': {
+      'title': 'Hôm nay bạn đã vượt qua bn câu hỏi',
+      'body': 'Hôm nay bạn đã vượt qua bn câu hỏi.Nếu chưa hãy mở app lên và trải nhiệm.Chúc bạn có một ngày vui vẻ',
+    },
+    'priority': 'high',
+    'data': {
+      'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+      'id': '1',
+      'status': 'done',
+    },
+    'to': deviceToken,
+  };
+
+  // Send the request
+  http.Response response = await http.post(
+    Uri.parse('https://fcm.googleapis.com/fcm/send'),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'key=$serverKey',
+    },
+    body: json.encode(body),
+  );
+
+  // Print the response
+  print(response.body);
 }
 class MyApp extends StatefulWidget {
    MyApp({super.key,required this.check});
@@ -80,6 +151,7 @@ class _MyAppState extends State<MyApp> {
   }
   @override
   Widget build(BuildContext context) {
+    ScreenUtil.init(context);
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(

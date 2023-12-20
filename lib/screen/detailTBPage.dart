@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'models/question.dart';
+import '../models/question.dart';
 
 class DetailTBPage extends StatefulWidget {
   Mes mes;

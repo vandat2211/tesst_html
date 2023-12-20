@@ -9,10 +9,10 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:tesst_html/sieuGhepHinh.dart';
+import 'package:tesst_html/screen/sieuGhepHinh.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'cau_hoi.dart';
-import 'models/question.dart';
+import '../models/question.dart';
 class HomePage extends StatefulWidget {
    HomePage({super.key,});
   @override
@@ -32,17 +32,11 @@ class _HomePageState extends State<HomePage> {
   List<String> listAnswersChoose = [];
    String name ="";
   String point ="";
-  List<String> listImage = ["https://cdn.tgdd.vn//GameApp/-1//toan-bo-dap-an-game-bat-chu-duoi-hinh-bat-chu111-800x545-800x545.jpg",
-  "https://sort.vn/upload_images/images/2022/01/10/Duoi-hinh-bat-chu-offline-640.jpg",
-  "https://giasuviet.edu.vn/tro-choi-duoi-hinh-bat-chu-tren-may-tinh/imager_33993.jpg"];
-  List<String> listImage2 = ["https://truonghoc247.vn/wp-content/uploads/2023/09/ung-dung-hoc-tieng-anh-0.jpg",
-  "https://static.anhnguathena.vn/anhngu//img.media/2020/04/15866955817.jpg"];
-  List<String> listImage3 = ["https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Logo_%C4%90u%E1%BB%95i_h%C3%ACnh_b%E1%BA%AFt_ch%E1%BB%AF_si%C3%AAu_t%E1%BB%91c.jpg/1280px-Logo_%C4%90u%E1%BB%95i_h%C3%ACnh_b%E1%BA%AFt_ch%E1%BB%AF_si%C3%AAu_t%E1%BB%91c.jpg",
-    "https://cdn-i.vtcnews.vn/resize/th/upload/2023/08/10/guoi-hinh-bat-chu-15005637.jpg"];
-  List<String> listImage4 = ["https://gitiho.com/caches/p_medium_large//images/article/photos/132070/image_puz12.jpg",
-    "https://mst.game24h.vn/upload/2018/2018-4/game/2018-10-10/1539183564_game-ghep-hinh-co-dien-1.JPG"];
-  List<String> listImage5 = ["https://salt.tikicdn.com/cache/w400/media/catalog/product/7/_/7.u5102.d20170404.t170522.380360.jpg",
-    "https://cdn.popsww.com/blog-kids/sites/3/2022/07/xem-500-phut-nhan-qua-1920x1080.jpg"];
+  List<String> listImage = [];
+  List<String> listImage2 = [];
+  List<String> listImage3 = [];
+  List<String> listImage4 = [];
+  List<String> listImage5 = [];
   @override
   void initState() {
     var random = Random();
@@ -146,11 +140,106 @@ class _HomePageState extends State<HomePage> {
         });
       }
     });
+
+    List<String> listImages = [];
+    DatabaseReference ref2 =
+    FirebaseDatabase.instance.ref("link_image/imageDHBC");
+    ref2.onValue.listen((DatabaseEvent event) {
+      final data = event.snapshot.value;
+      print("listImage:$data");
+      if (data != null) {
+        List<dynamic> dataList = data as List<dynamic>;
+        for (var item in dataList) {
+          if (item != null) {
+            listImages.add(item);
+          }}
+        print("listImage :${listImages}");
+        setState(() {
+          listImage = listImages;
+        });
+      }
+    });
+
+    List<String> listImage2s = [];
+    DatabaseReference ref3 =
+    FirebaseDatabase.instance.ref("link_image/imageLearnEL");
+    ref3.onValue.listen((DatabaseEvent event) {
+      final data = event.snapshot.value;
+      print("listImage:$data");
+      if (data != null) {
+        List<dynamic> dataList = data as List<dynamic>;
+        for (var item in dataList) {
+          if (item != null) {
+            listImage2s.add(item);
+          }}
+        print("listImage :${listImage2s}");
+        setState(() {
+          listImage2 = listImage2s;
+        });
+      }
+    });
+
+    List<String> listImage3s = [];
+    DatabaseReference ref3s =
+    FirebaseDatabase.instance.ref("link_image/imageDHBCST");
+    ref3s.onValue.listen((DatabaseEvent event) {
+      final data = event.snapshot.value;
+      print("listImage:$data");
+      if (data != null) {
+        List<dynamic> dataList = data as List<dynamic>;
+        for (var item in dataList) {
+          if (item != null) {
+            listImage3s.add(item);
+          }}
+        print("listImage :${listImage3s}");
+        setState(() {
+          listImage3 = listImage3s;
+        });
+      }
+    });
+
+    List<String> listImage4s = [];
+    DatabaseReference ref4s =
+    FirebaseDatabase.instance.ref("link_image/imageSGH");
+    ref4s.onValue.listen((DatabaseEvent event) {
+      final data = event.snapshot.value;
+      print("listImage:$data");
+      if (data != null) {
+        List<dynamic> dataList = data as List<dynamic>;
+        for (var item in dataList) {
+          if (item != null) {
+            listImage4s.add(item);
+          }}
+        print("listImage :${listImage4s}");
+        setState(() {
+          listImage4 = listImage4s;
+        });
+      }
+    });
+
+    List<String> listImage5s = [];
+    DatabaseReference ref5s =
+    FirebaseDatabase.instance.ref("link_image/imageSTT");
+    ref5s.onValue.listen((DatabaseEvent event) {
+      final data = event.snapshot.value;
+      print("listImage:$data");
+      if (data != null) {
+        List<dynamic> dataList = data as List<dynamic>;
+        for (var item in dataList) {
+          if (item != null) {
+            listImage5s.add(item);
+          }}
+        print("listImage :${listImage5s}");
+        setState(() {
+          listImage5 = listImage5s;
+        });
+      }
+    });
   }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body:  Column(
+      body: listImage.isEmpty||listImage2.isEmpty||listImage3.isEmpty||listImage4.isEmpty||listImage5.isEmpty?Center(child: CircularProgressIndicator(),): Column(
         children: [
           Stack(
             children: [
@@ -237,15 +326,15 @@ class _HomePageState extends State<HomePage> {
               StaggeredGridTile.count(
                 crossAxisCellCount: 4,
                 mainAxisCellCount: 2,
-                child: slide(listImage2, listImage2.length,"Học Englist cùng tôi",(){
-                  var random = Random();
-                  int randomNumber = random.nextInt(4) + 1;
+                child: slide(listImage2, listImage2.length,"Học Englist cùng tôi",() async {
+                  SharedPreferences pref = await SharedPreferences.getInstance();
+                  int randomNumber = pref.getInt("leverEL")??0;
                   print("randomNumbers: $randomNumber");
                   getDataFromFirebase("ListEnglish/English$randomNumber",(){
                     print("vao day3");
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => CauHoi(type: 'DHBC', questions: list,point: point,listAnswers: listAnswers,listAnswersChoose: [],)),
+                      MaterialPageRoute(builder: (context) => CauHoi(type: 'EL', questions: list,point: point,listAnswers: listAnswers,listAnswersChoose: [], leverEL: randomNumber,)),
                     );
                   });
                 }),
@@ -320,7 +409,7 @@ class _HomePageState extends State<HomePage> {
               fit: BoxFit.cover),
           // borderRadius: BorderRadius.circular(8)
         ),
-        margin: EdgeInsets.symmetric(vertical:10,horizontal: 5),
+        // margin: EdgeInsets.symmetric(vertical:10,horizontal: 5),
       );
   Widget flipCard(String title,Function() tap,FlipCardController controller,List<String> listImage){
       return GestureDetector(
@@ -362,7 +451,6 @@ class _HomePageState extends State<HomePage> {
                             fit: BoxFit.cover),
                         // borderRadius: BorderRadius.circular(8)
                       ),
-                      margin: EdgeInsets.symmetric(vertical:10,horizontal: 5),
                     ),
                     back: Container(
                       decoration:  BoxDecoration(
@@ -371,7 +459,6 @@ class _HomePageState extends State<HomePage> {
                             fit: BoxFit.cover),
                         // borderRadius: BorderRadius.circular(8)
                       ),
-                      margin: EdgeInsets.symmetric(vertical:10,horizontal: 5),
                     )
                 ),
                 Container(

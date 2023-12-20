@@ -1,7 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
-import 'constants/app_color.dart';
+import '../constants/app_color.dart';
 import 'indicator.dart';
 
 class ChartPage extends StatefulWidget {
@@ -30,36 +30,41 @@ class _ChartPageState extends State<ChartPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       body:widget.isLineChart
-      ?Stack(
-        children: <Widget>[
-          AspectRatio(
-            aspectRatio: 1.70,
-            child: Padding(
-              padding: const EdgeInsets.only(
-                right: 18,
-                left: 12,
-                top: 24,
-                bottom: 12,
-              ),
-              child: LineChart(
-                mainData(),
-              ),
-            ),
-          ),
-          SizedBox(
-            width: 60,
-            height: 34,
-            child: TextButton(
-              onPressed: () {
-              },
-              child: Text(
-                'point',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.black,
+      ?Column(
+        children: [
+          SizedBox(height: 50,),
+          Stack(
+            children: <Widget>[
+              AspectRatio(
+                aspectRatio: 1.70,
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                    right: 18,
+                    left: 12,
+                    top: 24,
+                    bottom: 12,
+                  ),
+                  child: LineChart(
+                    mainData(),
+                  ),
                 ),
               ),
-            ),
+              SizedBox(
+                width: 60,
+                height: 34,
+                child: TextButton(
+                  onPressed: () {
+                  },
+                  child: Text(
+                    'point',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       )

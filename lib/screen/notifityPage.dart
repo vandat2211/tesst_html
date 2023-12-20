@@ -155,7 +155,24 @@ class _NotifityPageState extends State<NotifityPage> {
       onTap: (){
       FocusScope.of(context).unfocus();
       },
-        child:list.isEmpty? Center(child: Text("không có thoong báo"),): Container(
+        child:list.isEmpty? Stack(
+          children: [
+            Center(child: Text("không có thoong báo"),),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.transparent,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(5)),
+                  ),
+                ),
+                onPressed: ()  {
+                  sendNotification();
+                }, child: Text("gửi thông báo"),),
+            )
+          ],
+        ): Container(
         height: MediaQuery.of(context).size.height,
         color:Colors.transparent,
           child: Stack(

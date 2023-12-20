@@ -8,12 +8,13 @@ import 'package:tesst_html/models/question.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:simple_animation_progress_bar/simple_animation_progress_bar.dart';
 class CauHoi extends StatefulWidget {
-   CauHoi({super.key, required this.type,required this.questions,this.point="0",this.listAnswers = const[],this.listAnswersChoose= const[]});
+   CauHoi({super.key, required this.type,required this.questions,this.point="0",this.listAnswers = const[],this.listAnswersChoose= const[], this.leverEL = 0});
   final String type ;
    List<Question> questions;
    List<String> listAnswers = [];
    List<String> listAnswersChoose = [];
    String point;
+   int leverEL;
   @override
   State<CauHoi> createState() => _CauHoiState();
 }
@@ -34,6 +35,7 @@ class _CauHoiState extends State<CauHoi> {
   late int point;
   int _secondsRemaining = 180; // 3 minutes = 180 seconds
   late Timer _timer;
+  int leverEL = 0;
   final List<String> _answers = [
     '4',
     'Paris',
@@ -159,7 +161,9 @@ class _CauHoiState extends State<CauHoi> {
   @override
   void initState() {
     widget.questions.shuffle();
+    leverEL = widget.leverEL;
     if(widget.type == "STT"){
+      startTimer();
       questions = widget.questions.take(5).toList();
       print("do dai list cau hỏi:");
     }else if(widget.type == "DHBCST"){
@@ -210,8 +214,11 @@ class _CauHoiState extends State<CauHoi> {
                 checkSubList(selectedIndexes, subListToCheck11)||
                 checkSubList(selectedIndexes, subListToCheck12))
             {
+              print("okoko");
+              point = point + 100;
               _showDialog(context, true);
             }else{
+              print("ko");
               _showDialog(context, false);
             }
 
@@ -284,56 +291,75 @@ class _CauHoiState extends State<CauHoi> {
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Thông báo"),
-          content: Text(pass
-              ? "Chúc mừng bạn đã trả lời đúng hết các câu hỏi.\nBan co muốn chơi lại không?"
-              : "Bạn đã trả lời sai, bạn có muốn chơi lại không?"),
-          actions: <Widget>[
-            TextButton(
-              child: Text("OK"),
-              onPressed: () async {
-                  SharedPreferences pref = await SharedPreferences.getInstance();
-                  String id =  pref.getString("id")??"";
-                  DatabaseReference ref = FirebaseDatabase.instance.ref("users/$id");
-                  await ref.update({
-                    "point":"$point",
-                  });
-
-                setState(() {
-                  _currentIndex = 0;
-                  _correctAnswers = 0;
-                  questions.shuffle();
-                  choose_dhbc = false;
-                  isSelectedList = List.generate(25, (index) => 0);
-                  selectedIndexes.clear();
-                });
-                Navigator.of(context).pop(); // Đóng Dialog
-              },
-            ),
-            TextButton(
-              child: Text("Cancel"),
-              onPressed: () async {
-                SharedPreferences pref = await SharedPreferences.getInstance();
-                String id =  pref.getString("id")??"";
-                DatabaseReference ref = FirebaseDatabase.instance.ref("users/$id");
-                await ref.update({
-                  "point":"$point",
-                });
-                setState(() {
-                  _currentIndex = 0;
-                  _correctAnswers = 0;
-                  // questions.shuffle();
-                  choose_dhbc = false;
-                  isSelectedList = List.generate(25, (index) => 0);
-                  selectedIndexes.clear();
-                });
-                // Thực hiện hành động khi người dùng chọn Cancel
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();// Đóng Dialog
-              },
-            ),
-          ],
+        return StatefulBuilder(
+          builder: (BuildContext context, setStates){
+            return AlertDialog(
+              title: Text("Thông báo"),
+              content: Text(pass
+                  ? "Chúc mừng bạn đã trả lời đúng hết các câu hỏi.\nBan co muốn chơi tiếp không?"
+                  : "Bạn đã trả lời sai, bạn có muốn chơi lại không?"),
+              actions: <Widget>[
+                TextButton(
+                  child: Text("OK"),
+                  onPressed: () async {
+                    SharedPreferences pref = await SharedPreferences.getInstance();
+                    String id =  pref.getString("id")??"";
+                    DatabaseReference ref = FirebaseDatabase.instance.ref("users/$id");
+                    await ref.update({
+                      "point":"$point",
+                    });
+                    if(pass){
+                      leverEL = leverEL + 1;
+                      pref.setInt("leverEL",leverEL);
+                      int randomNumber = pref.getInt("leverEL")??0;
+                      print("randomNumbers: $randomNumber");
+                       getDataFromFirebase("ListEnglish/English$randomNumber",(){
+                         setState(() {
+                           print("questions.lengh: ${questions.length}");
+                         });
+                      });
+                    }
+                    setState(() {
+                      _currentIndex = 0;
+                      _correctAnswers = 0;
+                      questions.shuffle();
+                      choose_dhbc = false;
+                      isSelectedList = List.generate(25, (index) => 0);
+                      selectedIndexes.clear();
+                    });
+                    Navigator.of(context).pop(); // Đóng Dialog
+                  },
+                ),
+                TextButton(
+                  child: Text("Cancel"),
+                  onPressed: () async {
+                    SharedPreferences pref = await SharedPreferences.getInstance();
+                    String id =  pref.getString("id")??"";
+                    DatabaseReference ref = FirebaseDatabase.instance.ref("users/$id");
+                    await ref.update({
+                      "point":"$point",
+                    });
+                    if(pass){
+                      leverEL = leverEL + 1;
+                      pref.setInt("leverEL",leverEL);
+                      print("leverEL :${pref.getInt("leverEL")??0}");
+                    }
+                    setState(() {
+                      _currentIndex = 0;
+                      _correctAnswers = 0;
+                      // questions.shuffle();
+                      choose_dhbc = false;
+                      isSelectedList = List.generate(25, (index) => 0);
+                      selectedIndexes.clear();
+                    });
+                    // Thực hiện hành động khi người dùng chọn Cancel
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pop();// Đóng Dialog
+                  },
+                ),
+              ],
+            );
+          },
         );
       },
     );
@@ -386,7 +412,13 @@ class _CauHoiState extends State<CauHoi> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios),
           onPressed: (){
-            _showDialogExist(context);
+            print("point:${point}");
+            print("pointa:${widget.point}");
+            if(point>int.parse(widget.point)){
+              _showDialogExist(context);
+            }else  {
+              Navigator.of(context).pop();
+            }
           },
         ),
         backgroundColor: Theme
@@ -397,15 +429,19 @@ class _CauHoiState extends State<CauHoi> {
       ),
       body: WillPopScope(
         onWillPop: ()async{
-          _showDialogExist(context);
+          if(point>int.parse(widget.point)){
+            _showDialogExist(context);
+          }else{
+            Navigator.of(context).pop();
+          }
           return false;
         },
-        child: Padding(
+        child:questions.isEmpty?Center(child: CircularProgressIndicator(),): Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              if(widget.type == "DHBCST")Padding(
+              if(widget.type == "DHBCST"||widget.type == "STT")Padding(
                 padding: const EdgeInsets.only(bottom: 10),
                 child: Align(
                   alignment: Alignment.centerRight,
@@ -449,57 +485,49 @@ class _CauHoiState extends State<CauHoi> {
                 ],
               ),
               SizedBox(height: 20),
+              _currentIndex == questions.length
+                  ?Container()
+                  :
               widget.type == "DHBCST"
               ?
                 choose_dhbc
                     ?
                     Expanded(
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    _currentIndex == questions.length
-                        ? Text(
-                      'Quiz completed! You got $_correctAnswers out of ${questions
-                          .length} correct.',
+                    Text(
+                      questions[_currentIndex].questionText,
                       style: TextStyle(fontSize: 18),
+                    ),
+                    SizedBox(height: 20),
+                    questions[_currentIndex].imageContent != ""
+                        ? Container(
+                      padding: const EdgeInsets.all(10),
+                      color: Colors.yellow,
+                      width:
+                      MediaQuery
+                          .of(context)
+                          .size
+                          .width * 0.5,
+                      height: 100,
+                      child: Image.asset(
+                          "assets/images/${questions[_currentIndex]
+                              .imageContent ?? ""}"),
                     )
-                        : Column(
-                      children: [
-                        Text(
-                          questions[_currentIndex].questionText,
-                          style: TextStyle(fontSize: 18),
-                        ),
-                        SizedBox(height: 20),
-                        questions[_currentIndex].imageContent != ""
-                            ? Container(
-                          padding: const EdgeInsets.all(10),
-                          color: Colors.yellow,
-                          width:
-                          MediaQuery
-                              .of(context)
-                              .size
-                              .width * 0.5,
-                          height: 100,
-                          child: Image.asset(
-                              "assets/images/${questions[_currentIndex]
-                                  .imageContent ?? ""}"),
-                        )
-                            : Container(),
-                        SizedBox(height: 20),
-                        if (questions[_currentIndex].type == "sort")
-                          _generateOptions_sort(widget.type),
-                        if (questions[_currentIndex].type == "choose")
-                          _generateOptions_choose(widget.type),
-                        if (questions[_currentIndex].type == "text" ||
-                            questions[_currentIndex].type == "image")
-                          ..._generateOptions(
-                              questions[_currentIndex].correctAnswer,widget.type),
-                        if (questions[_currentIndex].type == "sound")
-                          _generateOptions_sound(widget.type),
-                        if (questions[_currentIndex].type == "image_dhbc")
-                          _generateOptions_choose_word(widget.type),
-                      ],
-                    )
+                        : Container(),
+                    SizedBox(height: 20),
+                    if (questions[_currentIndex].type == "sort")
+                      _generateOptions_sort(widget.type),
+                    if (questions[_currentIndex].type == "choose")
+                      _generateOptions_choose(widget.type),
+                    if (questions[_currentIndex].type == "text" ||
+                        questions[_currentIndex].type == "image")
+                      ..._generateOptions(
+                          questions[_currentIndex].correctAnswer,widget.type),
+                    if (questions[_currentIndex].type == "sound")
+                      _generateOptions_sound(widget.type),
+                    if (questions[_currentIndex].type == "image_dhbc")
+                      _generateOptions_choose_word(widget.type),
                   ],
                 ),
               )
@@ -509,104 +537,82 @@ class _CauHoiState extends State<CauHoi> {
                   ?
               Expanded(
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _currentIndex == questions.length
-                        ? Text(
-                      'Quiz completed! You got $_correctAnswers out of ${questions
-                          .length} correct.',
-                      style: TextStyle(fontSize: 18),
-                    )
-                        : Column(
                       children: [
                         Text(
-                          questions[_currentIndex].questionText,
-                          style: TextStyle(fontSize: 18),
+                 questions[_currentIndex].questionText,
+                 style: TextStyle(fontSize: 18),
                         ),
                         SizedBox(height: 20),
                         questions[_currentIndex].imageContent != ""
-                            ? Container(
-                          padding: const EdgeInsets.all(10),
-                          color: Colors.yellow,
-                          width:
-                          MediaQuery
-                              .of(context)
-                              .size
-                              .width * 0.5,
-                          height: 100,
-                          child: Image.asset(
-                              "assets/images/${questions[_currentIndex]
-                                  .imageContent ?? ""}"),
+                   ? Container(
+                 padding: const EdgeInsets.all(10),
+                 color: Colors.yellow,
+                 width:
+                 MediaQuery
+                     .of(context)
+                     .size
+                     .width * 0.5,
+                 height: 100,
+                 child: Image.asset(
+                     "assets/images/${questions[_currentIndex]
+                         .imageContent ?? ""}"),
                         )
-                            : Container(),
+                   : Container(),
                         SizedBox(height: 20),
                         if (questions[_currentIndex].type == "sort")
-                          _generateOptions_sort(widget.type),
+                 _generateOptions_sort(widget.type),
                         if (questions[_currentIndex].type == "choose")
-                          _generateOptions_choose(widget.type),
+                 _generateOptions_choose(widget.type),
                         if (questions[_currentIndex].type == "text" ||
-                            questions[_currentIndex].type == "image")
-                          ..._generateOptions(
-                              questions[_currentIndex].correctAnswer,widget.type),
+                   questions[_currentIndex].type == "image")
+                 ..._generateOptions(
+                     questions[_currentIndex].correctAnswer,widget.type),
                         if (questions[_currentIndex].type == "sound")
-                          _generateOptions_sound(widget.type),
+                 _generateOptions_sound(widget.type),
                         if (questions[_currentIndex].type == "image_dhbc")
-                          _generateOptions_choose_word(widget.type),
+                 _generateOptions_choose_word(widget.type),
                       ],
-                    )
-                  ],
-                ),
+                    ),
               )
                   :Expanded(child: Stt())
             :Expanded(
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _currentIndex == questions.length
-                        ? Text(
-                      'Quiz completed! You got $_correctAnswers out of ${questions
-                          .length} correct.',
-                      style: TextStyle(fontSize: 18),
-                    )
-                        : Column(
-                      children: [
-                        Text(
-                          questions[_currentIndex].questionText,
-                          style: TextStyle(fontSize: 18),
-                        ),
-                        SizedBox(height: 20),
-                        questions[_currentIndex].imageContent != ""
-                            ? Container(
-                          padding: const EdgeInsets.all(10),
-                          color: Colors.yellow,
-                          width:
-                          MediaQuery
-                              .of(context)
-                              .size
-                              .width * 0.5,
-                          height: 100,
-                          child: Image.asset(
-                              "assets/images/${questions[_currentIndex]
-                                  .imageContent ?? ""}"),
-                        )
-                            : Container(),
-                        SizedBox(height: 20),
-                        if (questions[_currentIndex].type == "sort")
-                          _generateOptions_sort(widget.type),
-                        if (questions[_currentIndex].type == "choose")
-                          _generateOptions_choose(widget.type),
-                        if (questions[_currentIndex].type == "text" ||
-                            questions[_currentIndex].type == "image")
-                          ..._generateOptions(
-                              questions[_currentIndex].correctAnswer,widget.type),
-                        if (questions[_currentIndex].type == "sound")
-                          _generateOptions_sound(widget.type),
-                        if (questions[_currentIndex].type == "image_dhbc")
-                          _generateOptions_choose_word(widget.type),
-                      ],
-                    )
-                  ],
-                ),
+                 children: [
+                   Text(
+                     questions[_currentIndex].questionText,
+                     style: TextStyle(fontSize: 18),
+                   ),
+                   SizedBox(height: 20),
+                   questions[_currentIndex].imageContent != ""
+                       ? Container(
+                     padding: const EdgeInsets.all(10),
+                     color: Colors.yellow,
+                     width:
+                     MediaQuery
+                         .of(context)
+                         .size
+                         .width * 0.5,
+                     height: 100,
+                     child: Image.asset(
+                         "assets/images/${questions[_currentIndex]
+                             .imageContent ?? ""}"),
+                   )
+                       : Container(),
+                   SizedBox(height: 20),
+                   if (questions[_currentIndex].type == "sort")
+                     _generateOptions_sort(widget.type),
+                   if (questions[_currentIndex].type == "choose")
+                     _generateOptions_choose(widget.type),
+                   if (questions[_currentIndex].type == "text" ||
+                       questions[_currentIndex].type == "image")
+                     ..._generateOptions(
+                         questions[_currentIndex].correctAnswer,widget.type),
+                   if (questions[_currentIndex].type == "sound")
+                     _generateOptions_sound(widget.type),
+                   if (questions[_currentIndex].type == "image_dhbc")
+                     _generateOptions_choose_word(widget.type),
+                 ],
+                    ),
               ),
             ],
           ),
@@ -651,6 +657,9 @@ class _CauHoiState extends State<CauHoi> {
              int  id =  pref.getInt("English")??0;
              id = id + 1;
              await pref.setInt("English", id);
+             if(type=="EL" && _currentIndex==questions.length){
+               _showDialog(context, true);
+             }
            }
 
           } else {
@@ -762,6 +771,9 @@ class _CauHoiState extends State<CauHoi> {
                       int  id =  pref.getInt("English")??0;
                       id = id + 1;
                       await pref.setInt("English", id);
+                      if(type=="EL" && _currentIndex==questions.length){
+                        _showDialog(context, true);
+                      }
                     }
                   } else if (combinedWords.length >
                       questions[_currentIndex].correctAnswer.length) {
@@ -972,6 +984,9 @@ class _CauHoiState extends State<CauHoi> {
                 int  id =  pref.getInt("English")??0;
                 id = id + 1;
                 await pref.setInt("English", id);
+                if(type=="EL" && _currentIndex==questions.length){
+                  _showDialog(context, true);
+                }
               }
 
 
@@ -1036,6 +1051,9 @@ class _CauHoiState extends State<CauHoi> {
                 int  id =  pref.getInt("English")??0;
                 id = id + 1;
                 await pref.setInt("English", id);
+                if(type=="EL" && _currentIndex==questions.length){
+                  _showDialog(context, true);
+                }
               }
 
             } else if (text.isNotEmpty) {
@@ -1112,8 +1130,13 @@ class _CauHoiState extends State<CauHoi> {
                   },
                   direction: FlipDirection.HORIZONTAL, // Lật theo chiều ngang
                   front:Container(
-                    color: Colors.grey[300],
-                    child: Center(child: Text('Front of Card')),
+                    decoration:  const BoxDecoration(
+                      image: DecorationImage(
+                          image: AssetImage("assets/images/img.jpg"),
+                          fit: BoxFit.cover),
+                      // borderRadius: BorderRadius.circular(8)
+                    ),
+                    // margin: EdgeInsets.symmetric(vertical:10,horizontal: 5),
                   ),
                   back: Container(
                     color: Colors.grey[400],
@@ -1124,5 +1147,34 @@ class _CauHoiState extends State<CauHoi> {
       }
       ),
     );
+  }
+  Future<void> getDataFromFirebase( String link,Function() tap) async {
+    List<Question> listQ = [];
+    DatabaseReference starCountRef =
+    FirebaseDatabase.instance.ref(link);
+    starCountRef.onValue.listen((DatabaseEvent event) {
+      final data = event.snapshot.value;
+      print("objessssctdata:$data");
+      if (data != null) {
+        List<dynamic> dataList = data as List<dynamic>;
+        for (var item in dataList) {
+          if (item != null) {
+            // Tạo một đối tượng Question từ dữ liệu Firebase và thêm vào danh sách
+            Question question = Question(
+              id: item['id'].toString(),
+              correctAnswer: item['correctAnswer'].toString(),
+              type: item['type'] !=null ?item['type'].toString():"text",
+              questionText: item['questionText'].toString(),
+              imageContent: item['imageContent'] != null
+                  ? item['imageContent'].toString()
+                  : '',
+            );
+            listQ.add(question);
+          }}}
+      questions = listQ;
+    });
+    if(questions.isNotEmpty) {
+      tap();
+    }
   }
 }

@@ -61,6 +61,8 @@ dependencies:
   intl: ^0.17.0
   week_of_year: ^2.2.0
   connectivity_plus: ^5.0.2
+  workmanager:
+  flutter_screenutil: ^5.9.0
 
 dev_dependencies:
   flutter_test:
@@ -73,7 +75,7 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_native_splash: ^2.3.1
 flutter_native_splash:
-  image: assets/flutter.png
+  image: assets/bg.jpg
   color: "f3f3f3"
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

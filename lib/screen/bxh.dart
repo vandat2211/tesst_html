@@ -5,7 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
-import 'models/question.dart';
+import '../models/question.dart';
 
 class BxhScreen extends StatefulWidget {
   const BxhScreen({super.key});
@@ -49,10 +49,11 @@ class _BxhScreenState extends State<BxhScreen> {
         }).toList();
         // Sắp xếp userList theo trường 'point' giảm dần
         userList.sort((a, b) => int.parse(b.point).compareTo(int.parse(a.point)));
-        setState(() {
-          list = userList;
-        });
-
+        if(mounted){
+          setState(() {
+            list = userList;
+          });
+        }
       }
     });
   }
