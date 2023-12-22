@@ -7,7 +7,7 @@
         </intent>
     </queries>
     <application
-        android:label="tesst_html"
+        android:label="Word Connect"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

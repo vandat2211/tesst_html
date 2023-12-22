@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -8,8 +9,8 @@ import 'package:image/image.dart' as image;
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 class SieuGhepHinhScreen extends StatefulWidget {
-  const SieuGhepHinhScreen({super.key});
-
+   SieuGhepHinhScreen({super.key,this.point="0"});
+  String point;
   @override
   State<SieuGhepHinhScreen> createState() => _SieuGhepHinhScreenState();
 }
@@ -18,8 +19,14 @@ class _SieuGhepHinhScreenState extends State<SieuGhepHinhScreen> {
   Duration _duration = Duration(seconds: 1);
   int valueSlider=2;
   bool isSlider=false;
+  late int point;
   GlobalKey<_SlidePuzzleWidgetState> globalKey=GlobalKey();
   List<String> listImage = ["https://images.viblo.asia/5f7c8c9d-cdea-478b-9672-0d1d67cc4331.png"];
+  @override
+  void initState() {
+    point = int.parse(widget.point);
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -28,6 +35,7 @@ class _SieuGhepHinhScreenState extends State<SieuGhepHinhScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
+              alignment: Alignment.center,
               margin: EdgeInsets.only(top: 20, bottom: 5),
               child: Text(
                 "Slide Puzzle ${valueSlider}x$valueSlider",
@@ -50,29 +58,47 @@ class _SieuGhepHinhScreenState extends State<SieuGhepHinhScreen> {
             ),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 10),
-              child: Stack(
-                alignment: Alignment.topRight,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.0), // Đổi giá trị để điều chỉnh độ cong của viền
-                      border: Border.all(
-                        color: Colors.grey, // Màu sắc của viền
-                        width: 1.0, // Độ dày của viền
-                      ),
-                    ),
-                    child: ClipRRect(borderRadius: BorderRadius.circular(10),
-                      child: listImage.isEmpty ? Container(
-                        child: Center(
-                          child: CircularProgressIndicator(),
+                  Stack(
+                    alignment: Alignment.topRight,
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10.0), // Đổi giá trị để điều chỉnh độ cong của viền
+                          border: Border.all(
+                            color: Colors.grey, // Màu sắc của viền
+                            width: 1.0, // Độ dày của viền
+                          ),
                         ),
-                      ) : Image.network(listImage[0], fit: BoxFit.fill,
-                        height: 100,
-                        width: 180,),),
+                        child: ClipRRect(borderRadius: BorderRadius.circular(10),
+                          child: listImage.isEmpty ? Container(
+                            child: Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                          ) : Image.network(listImage[0], fit: BoxFit.fill,
+                            height: 100,
+                            width: 180,),),
+                      ),
+                      InkWell(child: Icon(Icons.cached,color: Colors.black,),onTap: (){
+                        // context.read<DogBloc>().add(FetchDogEvent());
+                      },)
+                    ],
                   ),
-                  InkWell(child: Icon(Icons.cached,color: Colors.black,),onTap: (){
-                    // context.read<DogBloc>().add(FetchDogEvent());
-                  },)
+                  FittedBox(
+                    fit: BoxFit.fitWidth,
+                    child: Container(
+                      alignment: Alignment.center,
+                      padding: const EdgeInsets.symmetric(vertical: 8,horizontal: 20),
+                      height: 35,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Colors.teal.shade100
+                      ),
+                      child: Text("$point",style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontSize: 15),),
+                    ),
+                  ),
                 ],
               ),),
             listImage.isEmpty ?
@@ -105,10 +131,26 @@ class _SieuGhepHinhScreenState extends State<SieuGhepHinhScreen> {
                   width: constraints.biggest.width,
                   // height: constraints.biggest.width,
                   child: SlidePuzzleWidget(
-                      voidCallback: (){
+                      voidCallback: () async {
                         setState(() {
+                          if(valueSlider==2){
+                            point = point + 10;
+                          }else if(valueSlider == 3){
+                            point = point + 50;
+                          }else if(valueSlider == 4){
+                            point = point + 100;
+                          }else if(valueSlider>=5){
+                            point = point + 200;
+                          }
                           valueSlider=valueSlider+1;
                           isSlider=true;
+
+                        });
+                        SharedPreferences pref = await SharedPreferences.getInstance();
+                        String id =  pref.getString("id")??"";
+                        DatabaseReference ref = FirebaseDatabase.instance.ref("users/$id");
+                        await ref.update({
+                          "point":"$point",
                         });
                       },isSlider: isSlider,
                       key: globalKey,
@@ -384,6 +426,7 @@ class _SlidePuzzleWidgetState extends State<SlidePuzzleWidget> {
         widget.voidCallback();
         generatePuzzle();
       }
+
       SharedPreferences pref = await SharedPreferences.getInstance();
         int  id =  pref.getInt("SGH")??0;
         id = id + 1;

@@ -188,7 +188,7 @@ class _EntryPointState extends State<MenuScreen> {
                                     color: Colors.red,
                                     borderRadius: BorderRadius.circular(50)
                                 ),
-                                child: Text("$count",style: TextStyle(color: Colors.white)),
+                                child: Text("$count",style: TextStyle(color: Colors.white,fontSize: 10)),
                               ),
                             ):Container(),
                           ],

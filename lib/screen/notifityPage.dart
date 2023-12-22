@@ -116,35 +116,57 @@ class _NotifityPageState extends State<NotifityPage> {
     String serverKey = 'AAAAblVqaiE:APA91bFW9mRx80KMG-LoXDShBFdLpV2ySyaSQzm-yO-tPdZsU4tbhAzOligccmgaTaBgOIIhdMDIg7ls8LQl6BcovRD7SQ1XleYNIs1ovx1MPbdfswyIncWQZQwypddN7T5XgLxPlVXH';
 
     // Get the device token from FirebaseMessaging
-    String deviceToken = await FirebaseMessaging.instance.getToken()??"";
+    List<String> deviceTokens = [];
+    DatabaseReference ref =
+    FirebaseDatabase.instance.ref("tokens/");
+    ref.onValue.listen((DatabaseEvent event) async {
+      final data = event.snapshot.value;
+      print("listdeviceTokens:$data");
+      if (data != null) {
+        final a = jsonEncode(data);
+        Map<String, dynamic> firebaseData = jsonDecode(a);
+        // Chuyển đổi dữ liệu từ Map sang List
+        List<Token> tokenList = firebaseData.values.map((value) {
+          return Token.fromJson(value.cast<String, dynamic>());
+        }).toList();
+        tokenList.forEach((element) {
+          deviceTokens.add(element.token);
+        });
+        for (String deviceToken in deviceTokens){
+          // Create the request body
+          Map<String, dynamic> body = {
+            'notification': {
+              'title': 'Chúc bạn ngày mới tốt lành.',
+              'body': 'Hôm nay bạn đã vượt qua bn câu hỏi.Nếu chưa hãy mở app lên và trải nhiệm.',
+            },
+            'priority': 'high',
+            'data': {
+              'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+              'id': '1',
+              'status': 'done',
+            },
+            'to': deviceToken,
+          };
 
-    // Create the request body
-    Map<String, dynamic> body = {
-      'notification': {
-        'title': 'Hello',
-        'body': 'This is a test message',
-      },
-      'priority': 'high',
-      'data': {
-        'click_action': 'FLUTTER_NOTIFICATION_CLICK',
-        'id': '1',
-        'status': 'done',
-      },
-      'to': deviceToken,
-    };
+          // Send the request
+          http.Response response = await http.post(
+            Uri.parse('https://fcm.googleapis.com/fcm/send'),
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'key=$serverKey',
+            },
+            body: json.encode(body),
+          );
+          // Print the response
+          print(response.body);
+        }
+      }
 
-    // Send the request
-    http.Response response = await http.post(
-      Uri.parse('https://fcm.googleapis.com/fcm/send'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'key=$serverKey',
-      },
-      body: json.encode(body),
-    );
+    });
 
-    // Print the response
-    print(response.body);
+
+
+
   }
   @override
   Widget build(BuildContext context) {

@@ -36,6 +36,10 @@ class FirebaseNotifications {
     _messaging.getToken().then((value) async {
       if (value != null) {
         await SharePreferUtils.saveFCMToken(value);
+        DatabaseReference ref = FirebaseDatabase.instance.ref("tokens/$value");
+        await ref.set({
+          'token':value,
+        });
         print("Token :" + value);
       }
     });

@@ -308,7 +308,7 @@ class _CauHoiState extends State<CauHoi> {
                     await ref.update({
                       "point":"$point",
                     });
-                    if(pass){
+                    if(pass && widget.type == "EL"){
                       leverEL = leverEL + 1;
                       pref.setInt("leverEL",leverEL);
                       int randomNumber = pref.getInt("leverEL")??0;
@@ -339,7 +339,7 @@ class _CauHoiState extends State<CauHoi> {
                     await ref.update({
                       "point":"$point",
                     });
-                    if(pass){
+                    if(pass && widget.type == "EL"){
                       leverEL = leverEL + 1;
                       pref.setInt("leverEL",leverEL);
                       print("leverEL :${pref.getInt("leverEL")??0}");
@@ -347,7 +347,7 @@ class _CauHoiState extends State<CauHoi> {
                     setState(() {
                       _currentIndex = 0;
                       _correctAnswers = 0;
-                      // questions.shuffle();
+                      questions.shuffle();
                       choose_dhbc = false;
                       isSelectedList = List.generate(25, (index) => 0);
                       selectedIndexes.clear();

@@ -23,7 +23,7 @@ class _InputNameState extends State<InputName> {
     return SafeArea(child: Scaffold(
       body: Container(
         decoration: BoxDecoration(
-          image: DecorationImage(image: AssetImage("assets/images/bg.jpg"),fit: BoxFit.cover)
+          image: DecorationImage(image: AssetImage("assets/images/bg.jpg"),fit: BoxFit.fitHeight)
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -36,10 +36,10 @@ class _InputNameState extends State<InputName> {
                 autofocus: true,
                 decoration: InputDecoration(
                   errorText:!irError? null:"ok",
-                  labelText: 'Enter your text',
-                  hintText: 'Type something...',
+                  labelText: '',
+                  hintText: 'Vui lòng điền họ tên người chơi!',
                   labelStyle: TextStyle(
-                    color: Colors.blue, // Màu chữ cho label
+                    color: Colors.black, // Màu chữ cho label
                   ),
                   hintStyle: TextStyle(
                     color: Colors.grey, // Màu chữ cho hint text
@@ -68,9 +68,10 @@ class _InputNameState extends State<InputName> {
                 ),
               ),
             ),
+            SizedBox(height: 10,),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.transparent,
+                backgroundColor: Colors.green.shade900,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(Radius.circular(5)),
                 ),
@@ -98,7 +99,7 @@ class _InputNameState extends State<InputName> {
                 }
 
 
-            }, child: Text("Ok"),)
+            }, child: Text("Tiếp Tục",style: TextStyle(color: Colors.white,fontSize: 20),),)
           ],
         ),
       ),
