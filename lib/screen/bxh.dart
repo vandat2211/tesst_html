@@ -4,6 +4,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 import '../models/question.dart';
 
@@ -21,6 +22,7 @@ class _BxhScreenState extends State<BxhScreen> {
   AutoScrollController controller = AutoScrollController();
   final _searchController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
+  List<String> listhh = ["hh1.png","hh2.png","hh3.png","hh4.png","hh5.png","hh6.png"];
 
   @override
   void initState() {
@@ -127,6 +129,19 @@ class _BxhScreenState extends State<BxhScreen> {
                     controller: controller,
                     itemCount: list.length,
                       itemBuilder: (context,index){
+                        if(int.parse(list[index].point)>=100){
+                          list[index].hh = listhh[5];
+                        } if(int.parse(list[index].point)>=200){
+                          list[index].hh = listhh[4];
+                        } if(int.parse(list[index].point)>=300){
+                          list[index].hh = listhh[3];
+                        } if(int.parse(list[index].point)>=400){
+                          list[index].hh = listhh[2];
+                        } if(int.parse(list[index].point)>=500){
+                          list[index].hh = listhh[1];
+                        } if(int.parse(list[index].point)>=600){
+                          list[index].hh = listhh[0];
+                        }
                     return Container(
                       decoration: BoxDecoration(
                         color:index==0||index==1||index==2?Colors.teal.shade100:Colors.teal.shade50,
@@ -135,17 +150,35 @@ class _BxhScreenState extends State<BxhScreen> {
                       margin: EdgeInsets.all(8),
                       child: ListTile(
                         leading: Container(
-                          width: 40,
+                          width: 110,
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text("${index+1}",style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold,color:index == 0? Colors.redAccent:index == 1?Colors.blueAccent:index == 2?Colors.teal:Colors.black),),
-                            VerticalDivider(color: Colors.teal,)
+                            SizedBox(width: 10,),
+                              VerticalDivider(color: Colors.teal,),
+                              SizedBox(width: 5,),
+                              Container(
+                                padding: EdgeInsets.all(5),
+                                width: 60,
+                                height: 60,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color:Colors.white30
+                                ),
+                                child:SvgPicture.asset(
+                                  'assets/svg_avata/${list[index].tt_image}',
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
                             ],
                           ),
                         ),
                         title: Text(list[index].name,style:TextStyle(fontSize: 20,fontWeight: FontWeight.bold) ,),
                         subtitle: Text(list[index].point,style: TextStyle(fontSize: 15,color: Colors.red,fontWeight: FontWeight.bold),),
+                        trailing: Container(
+                            width: 50,
+                            height: 50,
+                            child:list[index].hh.isNotEmpty?Image(image: AssetImage('assets/hh/${list[index].hh}')):Container()),
                       ),
                     );
                   }),

@@ -35,7 +35,7 @@ class _InputNameState extends State<InputName> {
                 focusNode: focusNode,
                 autofocus: true,
                 decoration: InputDecoration(
-                  errorText:!irError? null:"ok",
+                  errorText:!irError? null:"Tên người chơi không được để trống!",
                   labelText: '',
                   hintText: 'Vui lòng điền họ tên người chơi!',
                   labelStyle: TextStyle(
@@ -94,7 +94,8 @@ class _InputNameState extends State<InputName> {
                   await ref.set({
                     "id":"$timestamp",
                     "name": controller.text,
-                    "point":"0"
+                    "point":"0",
+                    "tt_image":"1.svg",
                   });
                 }
 

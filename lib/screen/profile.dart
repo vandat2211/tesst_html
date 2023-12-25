@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:week_of_year/week_of_year.dart';
@@ -20,18 +21,30 @@ class ProFileScreen extends StatefulWidget {
 }
 
 class _ProFileScreenState extends State<ProFileScreen> {
-  List<String> listAvata = ["ic_vneid_v.png","flutter.png"];
+  List<String> listAvata = [];
   TextEditingController controller = TextEditingController();
-  String link = "ic_vneid_v.png";
+  String link = "";
    int percentDHBC = 0,percentDHBCST = 0,percentEL = 0,percentSGH = 0,percentSTT = 0;
    List<double> listLineChart =[];
    bool ispageView = true;
   FocusNode focusNode = FocusNode();
+  String point = "";
+  String name= "";
+  List<String> listhh = ["hh1.png","hh2.png","hh3.png","hh4.png","hh5.png","hh6.png"];
+  String hh = "";
   @override
   void initState() {
+    getAvata();
     getDLPieChart();
     getDLLineChart();
     super.initState();
+  }
+  getAvata(){
+    for(int i =1 ;i<=40;i++){
+      setState(() {
+        listAvata.add("$i.svg");
+      });
+    }
   }
   Future<void> getDLPieChart() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
@@ -108,6 +121,23 @@ class _ProFileScreenState extends State<ProFileScreen> {
         double  su =  pref.getDouble("Su")??double.parse(user.point);
         if(mounted){
           setState(() {
+            point= user.point;
+            name =user.name;
+            link = user.tt_image;
+            if(int.parse(point)>=100){
+              hh = listhh[5];
+            } if(int.parse(point)>=200){
+              hh = listhh[4];
+            } if(int.parse(point)>=300){
+              hh = listhh[3];
+            } if(int.parse(point)>=400){
+              hh = listhh[2];
+            } if(int.parse(point)>=500){
+              hh = listhh[1];
+            } if(int.parse(point)>=600){
+              hh = listhh[0];
+            }
+            print("hhh:$hh");
             listLineChart = [mo/100,tu/100,we/100,th/100,fr/100,sa/100,su/100];
             print("mo : $mo, tu :$tu, we :$we, th :$th, fr :$fr, sa :$sa, su :$su");
           });
@@ -117,6 +147,7 @@ class _ProFileScreenState extends State<ProFileScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(child: Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Column(
         children: [
           Padding(
@@ -126,26 +157,36 @@ class _ProFileScreenState extends State<ProFileScreen> {
               children: [
                 Row(
                   children: [
-                    CircleAvatar(
-                      radius: 40, // Đường kính của hình tròn
-                      backgroundImage: AssetImage("assets/images/$link"),
+                    Container(
+                      padding: EdgeInsets.all(5),
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.teal.shade50,
+                      ),
+                      child:link.isNotEmpty? SvgPicture.asset(
+                        'assets/svg_avata/$link',
+                        fit: BoxFit.cover,
+                      ):Container(),
                     ),
                     SizedBox(width: 20,),
                     Container(
                       height: 50,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text("dat",style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
-                          Text("1000",style: TextStyle(fontSize: 15,color: Colors.redAccent),)
+                          Text(name,style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
+                          Text(point,style: TextStyle(fontSize: 15,color: Colors.redAccent,fontWeight: FontWeight.bold),)
                         ],
                       ),
                     )
                   ],
-                ), Container(
-                  width: 30,
-                    height: 30,
-                    child: Image(image: AssetImage('assets/images/flutter.png')))
+                ), hh.isNotEmpty?Container(
+                    width: 50,
+                    height: 50,
+                    child: Image(image: AssetImage('assets/hh/$hh'))):Container()
               ],
             ),
           ),
@@ -204,7 +245,7 @@ class _ProFileScreenState extends State<ProFileScreen> {
       barrierDismissible: true,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Thông báo"),
+          title: Text(changeAvaTa?"Avata":"Đổi tên"),
           content:changeAvaTa?
               Container(
                 height: 50,
@@ -215,16 +256,31 @@ class _ProFileScreenState extends State<ProFileScreen> {
                   shrinkWrap: true,
                     itemBuilder: (context,index){
                     return GestureDetector(
-                      onTap: (){
+                      onTap: () async {
                         setState(() {
                           link = listAvata[index];
                           print("linkkk:$link");
                         });
+                        SharedPreferences pref = await SharedPreferences.getInstance();
+                        String id =  pref.getString("id")??"";
+                        DatabaseReference ref = FirebaseDatabase.instance.ref("users/$id");
+                        await ref.update({
+                          "tt_image":link,
+                        });
                         Navigator.of(context).pop();
                       },
-                      child: CircleAvatar(
-                        radius: 40, // Đường kính của hình tròn
-                        backgroundImage: AssetImage("assets/images/${listAvata[index]}"),
+                      child: Container(
+                        padding: const EdgeInsets.all(5),
+                        width: 60,
+                        height: 60,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.teal.shade50,
+                        ),
+                        child: SvgPicture.asset(
+                          'assets/svg_avata/${listAvata[index]}',
+                          fit: BoxFit.contain,
+                        ),
                       ),
                     );
                     }),
@@ -241,9 +297,9 @@ class _ProFileScreenState extends State<ProFileScreen> {
                   });
                 },
                 decoration: InputDecoration(
-                  errorText:!irError? null:"ok",
-                  labelText: 'Enter your text',
-                  hintText: 'Type something...',
+                  errorText:!irError? null:"Tên người chơi không được để trống!",
+                  labelText: 'Tên người chơi',
+                  hintText: 'Vui lòng nhập tên',
                   labelStyle: TextStyle(
                     color: Colors.blue, // Màu chữ cho label
                   ),

@@ -8,13 +8,14 @@ import 'package:tesst_html/models/question.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:simple_animation_progress_bar/simple_animation_progress_bar.dart';
 class CauHoi extends StatefulWidget {
-   CauHoi({super.key, required this.type,required this.questions,this.point="0",this.listAnswers = const[],this.listAnswersChoose= const[], this.leverEL = 0});
+   CauHoi({super.key, required this.type,required this.questions,this.point="0",this.listAnswers = const[],this.listAnswersChoose= const[], this.leverEL = 0,this.title = ""});
   final String type ;
    List<Question> questions;
    List<String> listAnswers = [];
    List<String> listAnswersChoose = [];
    String point;
    int leverEL;
+   String title ;
   @override
   State<CauHoi> createState() => _CauHoiState();
 }
@@ -33,7 +34,7 @@ class _CauHoiState extends State<CauHoi> {
   List<String> list = [];
   List<String> list1 = [];
   late int point;
-  int _secondsRemaining = 180; // 3 minutes = 180 seconds
+  late int _secondsRemaining; // 3 minutes = 180 seconds
   late Timer _timer;
   int leverEL = 0;
   final List<String> _answers = [
@@ -163,14 +164,20 @@ class _CauHoiState extends State<CauHoi> {
     widget.questions.shuffle();
     leverEL = widget.leverEL;
     if(widget.type == "STT"){
+      _secondsRemaining = 120;
       startTimer();
       questions = widget.questions.take(5).toList();
       print("do dai list cau hỏi:");
     }else if(widget.type == "DHBCST"){
+      _secondsRemaining = 180;
       startTimer();
       questions = widget.questions;
     }
       else{
+      const oneSecond = Duration(seconds: 1);
+      _timer = Timer.periodic(oneSecond, (timer){
+
+      });
       questions = widget.questions;
     }
    point = int.parse(widget.point);
@@ -189,38 +196,47 @@ class _CauHoiState extends State<CauHoi> {
             _secondsRemaining--;
           } else {
             _timer.cancel();
-            List<int> subListToCheck = [1, 2, 3, 4, 5];
-            List<int> subListToCheck2 = [1, 6, 11, 16, 21];
-            List<int> subListToCheck3 = [2, 7, 12, 17, 22];
-            List<int> subListToCheck4 = [3, 8, 13, 18, 23];
-            List<int> subListToCheck5 = [4, 9, 14, 19, 24];
-            List<int> subListToCheck6 = [5, 10, 15, 20, 25];
-            List<int> subListToCheck7 = [6, 7, 8, 9, 10];
-            List<int> subListToCheck8 = [11, 12, 13, 14, 15];
-            List<int> subListToCheck9 = [16, 17, 18, 19, 20];
-            List<int> subListToCheck10 = [21, 22, 23, 24, 25];
-            List<int> subListToCheck11 = [1, 7, 13, 19, 25];
-            List<int> subListToCheck12 = [5, 9, 13, 17, 21];
-            if( checkSubList(selectedIndexes, subListToCheck)||
-                checkSubList(selectedIndexes, subListToCheck2)||
-                checkSubList(selectedIndexes, subListToCheck3)||
-                checkSubList(selectedIndexes, subListToCheck4)||
-                checkSubList(selectedIndexes, subListToCheck5)||
-                checkSubList(selectedIndexes, subListToCheck6)||
-                checkSubList(selectedIndexes, subListToCheck7)||
-                checkSubList(selectedIndexes, subListToCheck8)||
-                checkSubList(selectedIndexes, subListToCheck9)||
-                checkSubList(selectedIndexes, subListToCheck10)||
-                checkSubList(selectedIndexes, subListToCheck11)||
-                checkSubList(selectedIndexes, subListToCheck12))
-            {
-              print("okoko");
-              point = point + 100;
-              _showDialog(context, true);
-            }else{
-              print("ko");
-              _showDialog(context, false);
+            if(widget.type == "DHBCST"){
+              List<int> subListToCheck = [1, 2, 3, 4, 5];
+              List<int> subListToCheck2 = [1, 6, 11, 16, 21];
+              List<int> subListToCheck3 = [2, 7, 12, 17, 22];
+              List<int> subListToCheck4 = [3, 8, 13, 18, 23];
+              List<int> subListToCheck5 = [4, 9, 14, 19, 24];
+              List<int> subListToCheck6 = [5, 10, 15, 20, 25];
+              List<int> subListToCheck7 = [6, 7, 8, 9, 10];
+              List<int> subListToCheck8 = [11, 12, 13, 14, 15];
+              List<int> subListToCheck9 = [16, 17, 18, 19, 20];
+              List<int> subListToCheck10 = [21, 22, 23, 24, 25];
+              List<int> subListToCheck11 = [1, 7, 13, 19, 25];
+              List<int> subListToCheck12 = [5, 9, 13, 17, 21];
+              if( checkSubList(selectedIndexes, subListToCheck)||
+                  checkSubList(selectedIndexes, subListToCheck2)||
+                  checkSubList(selectedIndexes, subListToCheck3)||
+                  checkSubList(selectedIndexes, subListToCheck4)||
+                  checkSubList(selectedIndexes, subListToCheck5)||
+                  checkSubList(selectedIndexes, subListToCheck6)||
+                  checkSubList(selectedIndexes, subListToCheck7)||
+                  checkSubList(selectedIndexes, subListToCheck8)||
+                  checkSubList(selectedIndexes, subListToCheck9)||
+                  checkSubList(selectedIndexes, subListToCheck10)||
+                  checkSubList(selectedIndexes, subListToCheck11)||
+                  checkSubList(selectedIndexes, subListToCheck12))
+              {
+                print("okoko");
+                point = point + 100;
+                _showDialog(context, true);
+              }else{
+                print("ko");
+                _showDialog(context, false);
+              }
+            }else if(widget.type == "STT"){
+              if((point-int.parse(widget.point))>=200){
+                _showDialog(context, true);
+              }else{
+                _showDialog(context, false);
+              }
             }
+
 
           }
         });
@@ -318,6 +334,14 @@ class _CauHoiState extends State<CauHoi> {
                            print("questions.lengh: ${questions.length}");
                          });
                       });
+                    }else if(widget.type == "STT"){
+                      _secondsRemaining = 120;
+                      widget.questions.shuffle();
+                      startTimer();
+                      questions = widget.questions.take(5).toList();
+                    }else if(widget.type == "DHBCST"){
+                      _secondsRemaining = 180;
+                      startTimer();
                     }
                     setState(() {
                       _currentIndex = 0;
@@ -425,7 +449,8 @@ class _CauHoiState extends State<CauHoi> {
             .of(context)
             .colorScheme
             .inversePrimary,
-        title: Text(""),
+        title: Text(widget.title,style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold)),
+        centerTitle: true,
       ),
       body: WillPopScope(
         onWillPop: ()async{
@@ -438,126 +463,140 @@ class _CauHoiState extends State<CauHoi> {
         },
         child:questions.isEmpty?Center(child: CircularProgressIndicator(),): Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              if(widget.type == "DHBCST"||widget.type == "STT")Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: Align(
-                  alignment: Alignment.centerRight,
-                  child: Text(
-                    getTimerString(),
-                    style: TextStyle(fontSize: 20,color:Colors.red,fontWeight: FontWeight.bold),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if(widget.type == "DHBCST"||widget.type == "STT")Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: Text(
+                      getTimerString(),
+                      style: TextStyle(fontSize: 20,color:Colors.red,fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ),
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    child: SimpleAnimationProgressBar(
-                      height: 30,
-                      width: 300,
-                      backgroundColor: Colors.grey.shade800,
-                      foregrondColor: Colors.purple,
-                      ratio: _correctAnswers * 6 / 5 / questions.length,
-                      direction: Axis.horizontal,
-                      curve: Curves.fastLinearToSlowEaseIn,
-                      duration: const Duration(seconds: 3),
-                      borderRadius: BorderRadius.circular(10),
-                      gradientColor:
-                      const LinearGradient(colors: [Colors.pink, Colors.purple]),
-                    ),
-                  ),
-                  SizedBox(width: 10,),
-                  FittedBox(
-                    fit: BoxFit.fitWidth,
-                    child: Container(
-                      alignment: Alignment.center,
-                      padding: const EdgeInsets.symmetric(vertical: 8,horizontal: 20),
-                      height: 35,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          color: Colors.teal.shade100
-                      ),
-                      child: Text("$point",style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontSize: 15),),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 20),
-              _currentIndex == questions.length
-                  ?Container()
-                  :
-              widget.type == "DHBCST"
-              ?
-                choose_dhbc
-                    ?
-                    Expanded(
-                child: Column(
+                Row(
                   children: [
-                    Text(
-                      questions[_currentIndex].questionText,
-                      style: TextStyle(fontSize: 18),
+                    Expanded(
+                      child: SimpleAnimationProgressBar(
+                        height: 30,
+                        width: 300,
+                        backgroundColor: Colors.grey.shade800,
+                        foregrondColor: Colors.purple,
+                        ratio: _correctAnswers * 6 / 5 / questions.length,
+                        direction: Axis.horizontal,
+                        curve: Curves.fastLinearToSlowEaseIn,
+                        duration: const Duration(seconds: 3),
+                        borderRadius: BorderRadius.circular(10),
+                        gradientColor:
+                        const LinearGradient(colors: [Colors.pink, Colors.purple]),
+                      ),
                     ),
-                    SizedBox(height: 20),
-                    questions[_currentIndex].imageContent != ""
-                        ? Container(
-                      padding: const EdgeInsets.all(10),
-                      color: Colors.yellow,
-                      width:
-                      MediaQuery
-                          .of(context)
-                          .size
-                          .width * 0.5,
-                      height: 100,
-                      child: Image.asset(
-                          "assets/images/${questions[_currentIndex]
-                              .imageContent ?? ""}"),
-                    )
-                        : Container(),
-                    SizedBox(height: 20),
-                    if (questions[_currentIndex].type == "sort")
-                      _generateOptions_sort(widget.type),
-                    if (questions[_currentIndex].type == "choose")
-                      _generateOptions_choose(widget.type),
-                    if (questions[_currentIndex].type == "text" ||
-                        questions[_currentIndex].type == "image")
-                      ..._generateOptions(
-                          questions[_currentIndex].correctAnswer,widget.type),
-                    if (questions[_currentIndex].type == "sound")
-                      _generateOptions_sound(widget.type),
-                    if (questions[_currentIndex].type == "image_dhbc")
-                      _generateOptions_choose_word(widget.type),
+                    SizedBox(width: 10,),
+                    FittedBox(
+                      fit: BoxFit.fitWidth,
+                      child: Container(
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.symmetric(vertical: 8,horizontal: 20),
+                        height: 35,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: Colors.teal.shade100
+                        ),
+                        child: Text("$point",style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontSize: 15),),
+                      ),
+                    ),
                   ],
                 ),
-              )
-                    :Expanded(child: dhbcst())
-              :widget.type == "STT"
-              ?choose_dhbc
-                  ?
-              Expanded(
-                child: Column(
+                SizedBox(height: 20),
+                _currentIndex == questions.length
+                    ?Container()
+                    :
+                widget.type == "DHBCST"
+                ?
+                  choose_dhbc
+                      ?
+                      Column(
+                        children: [
+                          Text(
+                            questions[_currentIndex].questionText,
+                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
+                          SizedBox(height: 20),
+                          questions[_currentIndex].imageContent != ""?Container(
+                            color: Colors.transparent,
+                            width:
+                            MediaQuery
+                                .of(context)
+                                .size
+                                .width * 0.8,
+                            height: MediaQuery
+                                .of(context)
+                                .size
+                                .width * 0.5,
+                            child: Image.network(
+                              questions[_currentIndex]
+                                  .imageContent ?? "",fit: BoxFit.cover,
+                              loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                                if (loadingProgress == null) {
+                                  return child;
+                                } else {
+                                  return Center(child: CircularProgressIndicator()); // Hoặc indicator tải trong quá trình
+                                }
+                              },
+                            ),
+                          ):Container(),
+                          SizedBox(height: 20),
+                          if (questions[_currentIndex].type == "sort")
+                            _generateOptions_sort(widget.type),
+                          if (questions[_currentIndex].type == "choose")
+                            _generateOptions_choose(widget.type),
+                          if (questions[_currentIndex].type == "text" ||
+                              questions[_currentIndex].type == "image")
+                            ..._generateOptions(
+                                questions[_currentIndex].correctAnswer,widget.type),
+                          if (questions[_currentIndex].type == "sound")
+                            _generateOptions_sound(widget.type),
+                          if (questions[_currentIndex].type == "image_dhbc")
+                            _generateOptions_choose_word(widget.type),
+                        ],
+                      )
+                      :dhbcst()
+                :widget.type == "STT"
+                ?choose_dhbc
+                    ?
+                Column(
                       children: [
                         Text(
                  questions[_currentIndex].questionText,
                  style: TextStyle(fontSize: 18),
                         ),
                         SizedBox(height: 20),
-                        questions[_currentIndex].imageContent != ""
-                   ? Container(
-                 padding: const EdgeInsets.all(10),
-                 color: Colors.yellow,
-                 width:
-                 MediaQuery
-                     .of(context)
-                     .size
-                     .width * 0.5,
-                 height: 100,
-                 child: Image.asset(
-                     "assets/images/${questions[_currentIndex]
-                         .imageContent ?? ""}"),
-                        )
-                   : Container(),
+                        questions[_currentIndex].imageContent != ""?Container(
+                          color: Colors.transparent,
+                          width:
+                          MediaQuery
+                              .of(context)
+                              .size
+                              .width * 0.8,
+                          height: MediaQuery
+                              .of(context)
+                              .size
+                              .width * 0.5,
+                          child: Image.network(
+                            questions[_currentIndex]
+                                .imageContent ?? "",fit: BoxFit.cover,
+                            loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                              if (loadingProgress == null) {
+                                return child;
+                              } else {
+                                return Center(child: CircularProgressIndicator()); // Hoặc indicator tải trong quá trình
+                              }
+                            },
+                          ),
+                        ):Container(),
                         SizedBox(height: 20),
                         if (questions[_currentIndex].type == "sort")
                  _generateOptions_sort(widget.type),
@@ -572,49 +611,56 @@ class _CauHoiState extends State<CauHoi> {
                         if (questions[_currentIndex].type == "image_dhbc")
                  _generateOptions_choose_word(widget.type),
                       ],
-                    ),
-              )
-                  :Expanded(child: Stt())
-            :Expanded(
-                child: Column(
-                 children: [
-                   Text(
-                     questions[_currentIndex].questionText,
-                     style: TextStyle(fontSize: 18),
+                    )
+                    :Stt()
+              :Column(
+               children: [
+                 Text(
+                   questions[_currentIndex].questionText,
+                   style: TextStyle(fontSize: 18),
+                 ),
+                 SizedBox(height: 20),
+                 questions[_currentIndex].imageContent != ""?Container(
+                   color: Colors.transparent,
+                   width:
+                   MediaQuery
+                       .of(context)
+                       .size
+                       .width * 0.8,
+                   height: MediaQuery
+                       .of(context)
+                       .size
+                       .width * 0.5,
+                   child: Image.network(
+                       questions[_currentIndex]
+                           .imageContent ?? "",fit: BoxFit.cover,
+                     loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                       if (loadingProgress == null) {
+                         return child;
+                       } else {
+                         return Center(child: CircularProgressIndicator()); // Hoặc indicator tải trong quá trình
+                       }
+                     },
                    ),
-                   SizedBox(height: 20),
-                   questions[_currentIndex].imageContent != ""
-                       ? Container(
-                     padding: const EdgeInsets.all(10),
-                     color: Colors.yellow,
-                     width:
-                     MediaQuery
-                         .of(context)
-                         .size
-                         .width * 0.5,
-                     height: 100,
-                     child: Image.asset(
-                         "assets/images/${questions[_currentIndex]
-                             .imageContent ?? ""}"),
-                   )
-                       : Container(),
-                   SizedBox(height: 20),
-                   if (questions[_currentIndex].type == "sort")
-                     _generateOptions_sort(widget.type),
-                   if (questions[_currentIndex].type == "choose")
-                     _generateOptions_choose(widget.type),
-                   if (questions[_currentIndex].type == "text" ||
-                       questions[_currentIndex].type == "image")
-                     ..._generateOptions(
-                         questions[_currentIndex].correctAnswer,widget.type),
-                   if (questions[_currentIndex].type == "sound")
-                     _generateOptions_sound(widget.type),
-                   if (questions[_currentIndex].type == "image_dhbc")
-                     _generateOptions_choose_word(widget.type),
-                 ],
-                    ),
-              ),
-            ],
+                 ):Container(),
+                 SizedBox(height: 20),
+                 if (questions[_currentIndex].type == "sort")
+                   _generateOptions_sort(widget.type),
+                 if (questions[_currentIndex].type == "choose")
+                   _generateOptions_choose(widget.type),
+                 if (questions[_currentIndex].type == "text" ||
+                     questions[_currentIndex].type == "image" ||
+                     questions[_currentIndex].type == "text_answer")
+                   ..._generateOptions(
+                       questions[_currentIndex].correctAnswer,widget.type),
+                 if (questions[_currentIndex].type == "sound")
+                   _generateOptions_sound(widget.type),
+                 if (questions[_currentIndex].type == "image_dhbc")
+                   _generateOptions_choose_word(widget.type),
+               ],
+                  ),
+              ],
+            ),
           ),
         ),
       ),
@@ -623,8 +669,14 @@ class _CauHoiState extends State<CauHoi> {
 
 // câu hỏi chọn đấp án đúng
   List<Widget> _generateOptions(String correctAnswer,String type) {
-    List<String> options = [questions[_currentIndex].correctAnswer];
-    options.addAll(_getRandomAnswers(3));
+    List<String> options = [];
+    if(questions[_currentIndex].type == "text_answer"){
+       options = questions[_currentIndex].options;
+    }else{
+       options = [questions[_currentIndex].correctAnswer];
+      options.addAll(_getRandomAnswers(3));
+    }
+
 
     // Sắp xếp ngẫu nhiên lại các đáp án
     options.shuffle();
@@ -1074,77 +1126,85 @@ class _CauHoiState extends State<CauHoi> {
   }
 
   Widget dhbcst() {
-    return GridView.builder(
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 5, // Số cột trong GridView
-        ),
-        itemCount: 25, // Số lượng ô trong GridView
-        itemBuilder: (BuildContext context, int index) {
-          return GestureDetector(
-            onTap: (){
-              if((isSelectedList[index]==0)){
-                setState(() {
-                  choose_dhbc = true;
-                  isSelectedList[index] = 1;
-                  selectedIndexes.add(index+1);
-                });
-              }
-            },
-            child: Container(
-              margin: EdgeInsets.all(8),
-              color:isSelectedList[index]==1 ?Colors.green:isSelectedList[index]==2?Colors.red:Colors.blue, // Màu sắc của ô
-              child: Center(
-                child: Text(
-                  '${index+1}',
-                  style: TextStyle(color: Colors.white),
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.height,
+      child: GridView.builder(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 5, // Số cột trong GridView
+          ),
+          itemCount: 25, // Số lượng ô trong GridView
+          itemBuilder: (BuildContext context, int index) {
+            return GestureDetector(
+              onTap: (){
+                if((isSelectedList[index]==0)){
+                  setState(() {
+                    choose_dhbc = true;
+                    isSelectedList[index] = 1;
+                    selectedIndexes.add(index+1);
+                  });
+                }
+              },
+              child: Container(
+                margin: EdgeInsets.all(8),
+                color:isSelectedList[index]==1 ?Colors.green:isSelectedList[index]==2?Colors.red:Colors.blue, // Màu sắc của ô
+                child: Center(
+                  child: Text(
+                    '${index+1}',
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               ),
-            ),
-          );
-        });
+            );
+          }),
+    );
   }
   Widget Stt(){
     return Padding(
       padding: const EdgeInsets.only(top: 20),
-      child: GridView.builder(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: 0.0,
-          mainAxisSpacing: 30.0,
-      ),
-          itemCount: 4, // Số lượng ô trong GridView
-          itemBuilder: (BuildContext context, int index) {
-            int randomNumber = Random().nextInt(5) + 0;
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15,),
-              child: FlipCard(
-                  onFlipDone: (a) async {
-                    if(a){
-                     setState(() {
-                       choose_dhbc = true;
-                     });
-                     SharedPreferences pref = await SharedPreferences.getInstance();
-                     await pref.setInt("pointSTT", randomNumber*10);
-                     print("pointSTT :${pref.getInt("pointSTT")??0}");
-                    }
-                  },
-                  direction: FlipDirection.HORIZONTAL, // Lật theo chiều ngang
-                  front:Container(
-                    decoration:  const BoxDecoration(
-                      image: DecorationImage(
-                          image: AssetImage("assets/images/img.jpg"),
-                          fit: BoxFit.cover),
-                      // borderRadius: BorderRadius.circular(8)
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        child: GridView.builder(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 0.0,
+            mainAxisSpacing: 30.0,
+        ),
+            itemCount: 4, // Số lượng ô trong GridView
+            itemBuilder: (BuildContext context, int index) {
+              int randomNumber = Random().nextInt(5) + 0;
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15,),
+                child: FlipCard(
+                    onFlipDone: (a) async {
+                      if(a){
+                       setState(() {
+                         choose_dhbc = true;
+                       });
+                       SharedPreferences pref = await SharedPreferences.getInstance();
+                       await pref.setInt("pointSTT", randomNumber*10);
+                       print("pointSTT :${pref.getInt("pointSTT")??0}");
+                      }
+                    },
+                    direction: FlipDirection.HORIZONTAL, // Lật theo chiều ngang
+                    front:Container(
+                      decoration:  const BoxDecoration(
+                        image: DecorationImage(
+                            image: AssetImage("assets/images/img.jpg"),
+                            fit: BoxFit.cover),
+                        // borderRadius: BorderRadius.circular(8)
+                      ),
+                      // margin: EdgeInsets.symmetric(vertical:10,horizontal: 5),
                     ),
-                    // margin: EdgeInsets.symmetric(vertical:10,horizontal: 5),
-                  ),
-                  back: Container(
-                    color: Colors.grey[400],
-                    child: Center(child: Text("${randomNumber*10}")),
-                  )
-              ),
-            );
-      }
+                    back: Container(
+                      color: Colors.grey[400],
+                      child: Center(child: Text("${randomNumber*10}")),
+                    )
+                ),
+              );
+        }
+        ),
       ),
     );
   }
@@ -1168,6 +1228,7 @@ class _CauHoiState extends State<CauHoi> {
               imageContent: item['imageContent'] != null
                   ? item['imageContent'].toString()
                   : '',
+                options: item['options'] != null ? List<String>.from(item['options'] ?? []):[]
             );
             listQ.add(question);
           }}}

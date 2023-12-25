@@ -25,6 +25,7 @@ class _NotifityPageState extends State<NotifityPage> {
   AutoScrollController controller = AutoScrollController();
   final _searchController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
+  bool isNoTi = false;
   @override
   void initState() {
     getDS();
@@ -56,6 +57,9 @@ class _NotifityPageState extends State<NotifityPage> {
         listTB.sort((a, b) => b.idTB.compareTo(a.idTB));
         setState(() {
           list = listTB;
+          if(id=="1703303369561"){
+            isNoTi = true;
+          }
         });
 
       }
@@ -179,8 +183,8 @@ class _NotifityPageState extends State<NotifityPage> {
       },
         child:list.isEmpty? Stack(
           children: [
-            Center(child: Text("không có thoong báo"),),
-            Align(
+            Center(child: Text("không có thông báo",style: TextStyle(fontSize: 20),),),
+            isNoTi ?Align(
               alignment: Alignment.bottomCenter,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -192,7 +196,7 @@ class _NotifityPageState extends State<NotifityPage> {
                 onPressed: ()  {
                   sendNotification();
                 }, child: Text("gửi thông báo"),),
-            )
+            ):Container()
           ],
         ): Container(
         height: MediaQuery.of(context).size.height,
@@ -288,7 +292,7 @@ class _NotifityPageState extends State<NotifityPage> {
                 )
                     : Container(),
               ),
-              Align(
+              isNoTi?Align(
                 alignment: Alignment.bottomCenter,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -300,7 +304,7 @@ class _NotifityPageState extends State<NotifityPage> {
                   onPressed: ()  {
                     sendNotification();
                   }, child: Text("gửi thông báo"),),
-              )
+              ):Container()
             ],
           ),
         ),

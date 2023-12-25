@@ -40,23 +40,31 @@ class User {
   final String id;
   final String name;
   final String point;
+  final String tt_image;
+   String hh;
   User({
     required this.id,
     required this.name,
-    required this.point
+    required this.point,
+    required this.tt_image,
+     this.hh= ""
   });
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       id: json['id'] ?? '',
      name: json['name']??"",
       point: json['point']??"",
+        tt_image:json['tt_image']??"",
+      hh:json['hh']??"",
     );
   }
   Map<String, dynamic> toJson() {
     return {
       'id': id,
       'name':name,
-      "point":point
+      "point":point,
+      "tt_image":tt_image,
+      "hh":hh
     };
   }
 }

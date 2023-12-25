@@ -28,6 +28,7 @@ class _ChartPageState extends State<ChartPage> {
       sum += value;
     }
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.white,
       body:widget.isLineChart
       ?Column(

@@ -84,9 +84,8 @@ class _HomePageState extends State<HomePage> {
               correctAnswer: item['correctAnswer'].toString(),
               type: item['type'] !=null ?item['type'].toString():"text",
               questionText: item['questionText'].toString(),
-              imageContent: item['imageContent'] != null
-                  ? item['imageContent'].toString()
-                  : '',
+              imageContent: item['imageContent'] != null ? item['imageContent'].toString() : '',
+              options: item['options'] != null ? List<String>.from(item['options'] ?? []):[]
             );
             listQ.add(question);
           }}}
@@ -269,6 +268,7 @@ class _HomePageState extends State<HomePage> {
               )
             ],
           ),
+          SizedBox(height: 10,),
           StaggeredGrid.count(
             crossAxisCount: 4,
             mainAxisSpacing: 4,
@@ -282,7 +282,7 @@ class _HomePageState extends State<HomePage> {
                      print("vao day3");
                      Navigator.push(
                        context,
-                       MaterialPageRoute(builder: (context) => CauHoi(type: 'DHBC', questions: list,)),
+                       MaterialPageRoute(builder: (context) => CauHoi(type: 'DHBC', questions: list,point: point,title: "Đuổi hình bắt chữ",)),
                      );
                    });
                 }),
@@ -295,7 +295,7 @@ class _HomePageState extends State<HomePage> {
                       print("vao day3");
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => CauHoi(type: 'DHBCST', questions: list,)),
+                        MaterialPageRoute(builder: (context) => CauHoi(type: 'DHBCST', questions: list,point: point,title: "DHBC siêu tốc",)),
                       );
                   });
                 },_controller,listImage3),
@@ -306,7 +306,7 @@ class _HomePageState extends State<HomePage> {
                 child: flipCard("Siêu ghép hình",()  {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => SieuGhepHinhScreen()),
+                    MaterialPageRoute(builder: (context) => SieuGhepHinhScreen(point: point,title: "Siêu ghép hình",)),
                   );
                 },_controller1,listImage4),
               ),
@@ -318,7 +318,7 @@ class _HomePageState extends State<HomePage> {
                     print("vao day3");
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => CauHoi(type: 'STT', questions: list,listAnswers: listAnswers,listAnswersChoose: [],)),
+                      MaterialPageRoute(builder: (context) => CauHoi(type: 'STT', questions: list,listAnswers: listAnswers,listAnswersChoose: [],point: point,title:"Siêu thử thách" ,)),
                     );
                   });
                 },_controller2,listImage5),
@@ -334,7 +334,7 @@ class _HomePageState extends State<HomePage> {
                     print("vao day3");
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => CauHoi(type: 'EL', questions: list,point: point,listAnswers: listAnswers,listAnswersChoose: [], leverEL: randomNumber,)),
+                      MaterialPageRoute(builder: (context) => CauHoi(title: "Học Englist cùng tôi",type: 'EL', questions: list,point: point,listAnswers: listAnswers,listAnswersChoose: [], leverEL: randomNumber,)),
                     );
                   });
                 }),
@@ -360,7 +360,7 @@ class _HomePageState extends State<HomePage> {
               height: 40,
               child: GridTileBar(
                 backgroundColor: Colors.black12,
-                title:Text(title),
+                title:Text(title,style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
                 subtitle: Text(""),
               ),
             ),
@@ -390,7 +390,7 @@ class _HomePageState extends State<HomePage> {
                 Align(
                   alignment: Alignment.bottomCenter,
                   child: AnimatedSmoothIndicator(
-                      effect: ExpandingDotsEffect(dotWidth: 15,activeDotColor: Colors.blue),
+                      effect: ScrollingDotsEffect(dotWidth: 10,activeDotColor: Colors.blue,dotHeight:10 ),
                       activeIndex: activeIndex,
                       count: length
                   ),
@@ -428,6 +428,7 @@ class _HomePageState extends State<HomePage> {
                   backgroundColor: Colors.black12,
                   title:Marquee(
                     text: title,
+                    style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),
                     blankSpace: 100.0,
                     velocity: 50.0,
                     pauseAfterRound: Duration(seconds: 1),
