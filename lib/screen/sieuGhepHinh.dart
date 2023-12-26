@@ -9,9 +9,10 @@ import 'package:image/image.dart' as image;
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 class SieuGhepHinhScreen extends StatefulWidget {
-   SieuGhepHinhScreen({super.key,this.point="0",this.title =""});
+   SieuGhepHinhScreen({super.key,this.point="0",this.title ="",required this.listImageSGH});
   String point;
   String title;
+  List<String> listImageSGH = [];
   @override
   State<SieuGhepHinhScreen> createState() => _SieuGhepHinhScreenState();
 }
@@ -22,9 +23,12 @@ class _SieuGhepHinhScreenState extends State<SieuGhepHinhScreen> {
   bool isSlider=false;
   late int point;
   GlobalKey<_SlidePuzzleWidgetState> globalKey=GlobalKey();
-  List<String> listImage = ["https://images.viblo.asia/5f7c8c9d-cdea-478b-9672-0d1d67cc4331.png"];
+  List<String> listImage = [];
   @override
   void initState() {
+    if(widget.listImageSGH.isNotEmpty){
+      listImage = widget.listImageSGH;
+    }
     point = int.parse(widget.point);
     super.initState();
   }
@@ -92,11 +96,13 @@ class _SieuGhepHinhScreenState extends State<SieuGhepHinhScreen> {
                             child: CircularProgressIndicator(),
                           ),
                         ) : Image.network(listImage[0], fit: BoxFit.fill,
-                          height: 100,
-                          width: 180,),),
+                          height: 80,
+                          width: 90,),),
                     ),
                     InkWell(child: Icon(Icons.cached,color: Colors.black,),onTap: (){
-                      // context.read<DogBloc>().add(FetchDogEvent());
+                      setState(() {
+                        listImage.shuffle();
+                      });
                     },)
                   ],
                 ),
@@ -173,7 +179,7 @@ class _SieuGhepHinhScreenState extends State<SieuGhepHinhScreen> {
                     sizePuzzle: valueSlider,
                     imageBackGround: Image(
                       image: NetworkImage(listImage[0]),
-                      fit: BoxFit.cover,)),
+                      fit: BoxFit.contain,)),
               );
             }),
           )

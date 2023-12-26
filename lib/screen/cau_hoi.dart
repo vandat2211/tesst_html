@@ -8,13 +8,14 @@ import 'package:tesst_html/models/question.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:simple_animation_progress_bar/simple_animation_progress_bar.dart';
 class CauHoi extends StatefulWidget {
-   CauHoi({super.key, required this.type,required this.questions,this.point="0",this.listAnswers = const[],this.listAnswersChoose= const[], this.leverEL = 0,this.title = ""});
+   CauHoi({super.key, required this.type,required this.questions,this.point="0",this.listAnswers = const[],this.listAnswersChoose= const[], this.leverEL = 0,this.title = "",this.leverDHBC = 0});
   final String type ;
    List<Question> questions;
    List<String> listAnswers = [];
    List<String> listAnswersChoose = [];
    String point;
    int leverEL;
+   int leverDHBC;
    String title ;
   @override
   State<CauHoi> createState() => _CauHoiState();
@@ -37,6 +38,7 @@ class _CauHoiState extends State<CauHoi> {
   late int _secondsRemaining; // 3 minutes = 180 seconds
   late Timer _timer;
   int leverEL = 0;
+  int leverDHBC = 0;
   final List<String> _answers = [
     '4',
     'Paris',
@@ -163,6 +165,7 @@ class _CauHoiState extends State<CauHoi> {
   void initState() {
     widget.questions.shuffle();
     leverEL = widget.leverEL;
+    leverDHBC = widget.leverDHBC;
     if(widget.type == "STT"){
       _secondsRemaining = 120;
       startTimer();
@@ -334,7 +337,18 @@ class _CauHoiState extends State<CauHoi> {
                            print("questions.lengh: ${questions.length}");
                          });
                       });
-                    }else if(widget.type == "STT"){
+                    }else if(pass && widget.type == "DHBC"){
+                      leverDHBC = leverDHBC + 1;
+                      pref.setInt("leverDHBC",leverDHBC);
+                      int randomNumber = pref.getInt("leverDHBC")??0;
+                      print("randomNumbers: $randomNumber");
+                      getDataFromFirebase("ListQuestion/Question$randomNumber",(){
+                        setState(() {
+                          print("questions.lengh: ${questions.length}");
+                        });
+                      });
+                    }
+                    else if(widget.type == "STT"){
                       _secondsRemaining = 120;
                       widget.questions.shuffle();
                       startTimer();
@@ -952,7 +966,10 @@ class _CauHoiState extends State<CauHoi> {
                       int  id =  pref.getInt("dhbc")??0;
                       id = id + 1;
                       await pref.setInt("dhbc", id);
-                    }else if(type=="image_dhbc"){
+                      if(_currentIndex==questions.length){
+                        _showDialog(context, true);
+                      }
+                    }else if(type=="DHBCST"){
                       setState(() {
                         point = point + 10;
                       });

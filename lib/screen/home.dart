@@ -26,10 +26,13 @@ class _HomePageState extends State<HomePage> {
   final _controller = FlipCardController();
   final _controller1 = FlipCardController();
   final _controller2 = FlipCardController();
+  int leverEL = 0;
+  int leverDBHc = 0;
   int activeIndex=0;
   List<Question> list= [];
   List<String> listAnswers = [];
   List<String> listAnswersChoose = [];
+  List<String> listImageSGH = [];
    String name ="";
   String point ="";
   List<String> listImage = [];
@@ -56,6 +59,7 @@ class _HomePageState extends State<HomePage> {
       // Gọi hàm toggleCard của FlipCardController để lật thẻ
       _controller2.toggleCard();
     });
+    getLever();
     getUserInfo();
     getDataListAnsers();
     super.initState();
@@ -66,6 +70,15 @@ class _HomePageState extends State<HomePage> {
     _timer?.cancel();
     _timer1?.cancel();
     _timer2?.cancel();
+  }
+  getLever() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    int randomNumber = pref.getInt("leverEL")??0;
+    int leverDBHC = pref.getInt("leverDBHC")??0;
+    setState(() {
+      leverEL = randomNumber;
+      leverDBHc = leverDBHC;
+    });
   }
   Future<void> getDataFromFirebase( String link,Function() tap) async {
     List<Question> listQ = [];
@@ -235,6 +248,30 @@ class _HomePageState extends State<HomePage> {
       }
     });
   }
+  void getDataListImageSGH(String link,Function() tap) {
+    List<String> stringList = [];
+    DatabaseReference ref =
+    FirebaseDatabase.instance.ref(link);
+    ref.onValue.listen((DatabaseEvent event) {
+      final data = event.snapshot.value;
+      print("listimageSGH:$data");
+      if (data != null) {
+        List<dynamic> dataList = data as List<dynamic>;
+        for (var item in dataList) {
+          if (item != null) {
+            stringList.add(item);
+          }
+        }
+        print("stringList :${stringList}");
+        setState(() {
+          listImageSGH = stringList;
+        });
+        if(listImageSGH.isNotEmpty){
+          tap();
+        }
+      }
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -278,14 +315,15 @@ class _HomePageState extends State<HomePage> {
                 crossAxisCellCount: 2,
                 mainAxisCellCount: 2,
                 child: slide(listImage,listImage.length,"Đuổi hình bắt chữ",() async {
-                   getDataFromFirebase('ListQuestion/Question/',(){
-                     print("vao day3");
+                  SharedPreferences pref = await SharedPreferences.getInstance();
+                  int leverDHBC = pref.getInt("leverDHBC")??0;
+                   getDataFromFirebase('ListQuestion/Question$leverDHBC',(){
                      Navigator.push(
                        context,
                        MaterialPageRoute(builder: (context) => CauHoi(type: 'DHBC', questions: list,point: point,title: "Đuổi hình bắt chữ",)),
                      );
                    });
-                }),
+                },"Bài ${leverDBHc+1}"),
               ),
               StaggeredGridTile.count(
                 crossAxisCellCount: 2,
@@ -304,17 +342,20 @@ class _HomePageState extends State<HomePage> {
                 crossAxisCellCount: 1,
                 mainAxisCellCount: 1,
                 child: flipCard("Siêu ghép hình",()  {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => SieuGhepHinhScreen(point: point,title: "Siêu ghép hình",)),
-                  );
+                  getDataListImageSGH('listImageSGH',(){
+                    print("vao day sgh");
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => SieuGhepHinhScreen(point: point,title: "Siêu ghép hình", listImageSGH: listImageSGH,)),
+                    );
+                  });
                 },_controller1,listImage4),
               ),
               StaggeredGridTile.count(
                 crossAxisCellCount: 1,
                 mainAxisCellCount: 1,
                 child: flipCard("Siêu thử thách",(){
-                  getDataFromFirebase('ListQuestion/Question/',(){
+                  getDataFromFirebase('listSTT',(){
                     print("vao day3");
                     Navigator.push(
                       context,
@@ -337,7 +378,7 @@ class _HomePageState extends State<HomePage> {
                       MaterialPageRoute(builder: (context) => CauHoi(title: "Học Englist cùng tôi",type: 'EL', questions: list,point: point,listAnswers: listAnswers,listAnswersChoose: [], leverEL: randomNumber,)),
                     );
                   });
-                }),
+                },"Bài ${leverEL+1}"),
               ),
             ],
           ),
@@ -345,7 +386,7 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-  Widget slide(List<String> listImage,int length,String title,Function() tap){
+  Widget slide(List<String> listImage,int length,String title,Function() tap,String subTitle){
     return GestureDetector(
       onTap: tap,
       child: GridTile(
@@ -357,11 +398,11 @@ class _HomePageState extends State<HomePage> {
             ),
             clipBehavior: Clip.antiAlias,
             child: SizedBox(
-              height: 40,
+              height: 60,
               child: GridTileBar(
                 backgroundColor: Colors.black12,
                 title:Text(title,style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
-                subtitle: Text(""),
+                subtitle: Text(subTitle,style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20,color: Colors.white),),
               ),
             ),
           ),
