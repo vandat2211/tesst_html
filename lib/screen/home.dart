@@ -93,10 +93,10 @@ class _HomePageState extends State<HomePage> {
           if (item != null) {
             // Tạo một đối tượng Question từ dữ liệu Firebase và thêm vào danh sách
             Question question = Question(
-              id: item['id'].toString(),
-              correctAnswer: item['correctAnswer'].toString(),
+              id: item['id']!=null?item['id'].toString():"",
+              correctAnswer: item['correctAnswer']!=null?item['correctAnswer'].toString():"",
               type: item['type'] !=null ?item['type'].toString():"text",
-              questionText: item['questionText'].toString(),
+              questionText: item['questionText']!=null?item['questionText'].toString():"",
               imageContent: item['imageContent'] != null ? item['imageContent'].toString() : '',
               options: item['options'] != null ? List<String>.from(item['options'] ?? []):[]
             );
@@ -329,7 +329,7 @@ class _HomePageState extends State<HomePage> {
                 crossAxisCellCount: 2,
                 mainAxisCellCount: 1,
                 child: flipCard("DHBC siêu tốc",(){
-                  getDataFromFirebase('ListQuestion/Question/',(){
+                  getDataFromFirebase('ListQuestion/Question0/',(){
                       print("vao day3");
                       Navigator.push(
                         context,

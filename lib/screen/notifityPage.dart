@@ -7,8 +7,10 @@ import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tesst_html/components/widget/buttonCustom.dart';
 import 'package:tesst_html/models/question.dart';
 
+import '../components/core_toast.dart';
 import 'detailTBPage.dart';
 
 class NotifityPage extends StatefulWidget {
@@ -25,7 +27,13 @@ class _NotifityPageState extends State<NotifityPage> {
   AutoScrollController controller = AutoScrollController();
   final _searchController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
-  bool isNoTi = false;
+  TextEditingController controllerKey = TextEditingController();
+  TextEditingController controllerTitle = TextEditingController();
+  TextEditingController controllerContent = TextEditingController();
+  FocusNode focusNode = FocusNode();
+  bool irError = false;
+  bool _isBottomSheetVisible = false;
+  bool visibleInputNoTi = false;
   @override
   void initState() {
     getDS();
@@ -57,9 +65,6 @@ class _NotifityPageState extends State<NotifityPage> {
         listTB.sort((a, b) => b.idTB.compareTo(a.idTB));
         setState(() {
           list = listTB;
-          if(id=="1703303369561"){
-            isNoTi = true;
-          }
         });
 
       }
@@ -115,7 +120,7 @@ class _NotifityPageState extends State<NotifityPage> {
     });
     print("list:$list");
   }
-  void sendNotification() async {
+  void sendNotification(String title,String content) async {
     // Get the server key from Firebase console
     String serverKey = 'AAAAblVqaiE:APA91bFW9mRx80KMG-LoXDShBFdLpV2ySyaSQzm-yO-tPdZsU4tbhAzOligccmgaTaBgOIIhdMDIg7ls8LQl6BcovRD7SQ1XleYNIs1ovx1MPbdfswyIncWQZQwypddN7T5XgLxPlVXH';
 
@@ -140,8 +145,8 @@ class _NotifityPageState extends State<NotifityPage> {
           // Create the request body
           Map<String, dynamic> body = {
             'notification': {
-              'title': 'Chúc bạn ngày mới tốt lành.',
-              'body': 'Hôm nay bạn đã vượt qua bn câu hỏi.Nếu chưa hãy mở app lên và trải nhiệm.',
+              'title': title,
+              'body': content,
             },
             'priority': 'high',
             'data': {
@@ -167,40 +172,223 @@ class _NotifityPageState extends State<NotifityPage> {
       }
 
     });
+  }
+  void _showBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      isDismissible: false,
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16.0)),
+      ),
+      builder: (BuildContext context) {
+        return SingleChildScrollView(
+          padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom),
+          child: Container(
+            padding: EdgeInsets.all(16.0),
+            child: StatefulBuilder(
+              builder: (context,setStates){
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Thông báo',
+                          style: TextStyle(
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        InkWell(
+                            borderRadius:  BorderRadius.circular(30),
+                            onTap:(){
+                              Navigator.pop(context);
+                            },child: Container(
+                            padding: EdgeInsets.all(10),
+                            child: Icon(Icons.close)))
+                      ],
+                    ),
+                    !visibleInputNoTi?Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: TextField(
+                        controller: controllerKey,
+                        focusNode: focusNode,
+                        autofocus: true,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          errorText:!irError? null:"Nếu bạn là quản trị viên thì vui lòng nhập mã đã được cấp!",
+                          labelText: 'Mã thông báo',
+                          hintText: 'Vui lòng mã',
+                          errorStyle: TextStyle(overflow: TextOverflow.clip),
+                          labelStyle: TextStyle(
+                            color: Colors.blue, // Màu chữ cho label
+                          ),
+                          hintStyle: TextStyle(
+                            color: Colors.grey, // Màu chữ cho hint text
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.blue, // Màu viền khi focus vào TextField
+                            ),
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.grey, // Màu viền khi không focus
+                            ),
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          filled: true,
+                          fillColor: Colors.white, // Màu nền cho TextField
+                          contentPadding: EdgeInsets.symmetric(
+                            horizontal: 16.0,
+                            vertical: 14.0,
+                          ),
+                        ),
+                      ),
+                    ):Container(),
+                    visibleInputNoTi?TextField(
+                      controller: controllerTitle,
+                      decoration: InputDecoration(
+                        labelText: 'Tên thông báo',
+                        hintText: 'Vui lòng nhập tên thông báo',
+                        labelStyle: TextStyle(
+                          color: Colors.blue, // Màu chữ cho label
+                        ),
+                        hintStyle: TextStyle(
+                          color: Colors.grey, // Màu chữ cho hint text
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.blue, // Màu viền khi focus vào TextField
+                          ),
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.grey, // Màu viền khi không focus
+                          ),
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        filled: true,
+                        fillColor: Colors.white, // Màu nền cho TextField
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 16.0,
+                          vertical: 14.0,
+                        ),
+                      ),
+                    ):Container(),
+                    visibleInputNoTi?Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: TextField(
+                        controller: controllerContent,
+                        decoration: InputDecoration(
+                          labelText: 'Nội dung thông báo',
+                          hintText: 'Vui lòng nội dung',
+                          labelStyle: TextStyle(
+                            color: Colors.blue, // Màu chữ cho label
+                          ),
+                          hintStyle: TextStyle(
+                            color: Colors.grey, // Màu chữ cho hint text
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.blue, // Màu viền khi focus vào TextField
+                            ),
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.grey, // Màu viền khi không focus
+                            ),
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          filled: true,
+                          fillColor: Colors.white, // Màu nền cho TextField
+                          contentPadding: EdgeInsets.symmetric(
+                            horizontal: 16.0,
+                            vertical: 14.0,
+                          ),
+                        ),
+                      ),
+                    ):Container(),
+                    SizedBox(height: 16.0),
+                    ButtonCusTom(
+                      title: visibleInputNoTi?"Gửi thông báo":"Tiếp tục",
+                      onPressed: () async {
+                        if(!visibleInputNoTi){
+                          if(controllerKey.text == "221120"){
+                            setStates(() {
+                              visibleInputNoTi = true;
+                            });
+                          }else{
+                            setStates(() {
+                              irError = true;
+                            });
+                          }
+                        }else{
+                          if(controllerTitle.text.isNotEmpty && controllerContent.text.isNotEmpty){
+                            sendNotification(controllerTitle.text,controllerContent.text);
+                            Navigator.pop(context);
+                          }else{
+                            setStates(() {
+                              Toast.showLongTop("Bạn phải nhập đầy đủ tên, nội dung thông báo");
+                            });
+                          }
+                        }
 
-
-
-
+                      },
+                    )
+                  ],
+                );
+              },
+            ),
+          ),
+        );
+      },
+    ).whenComplete(() {
+      _isBottomSheetVisible = false;
+    });
   }
   @override
   Widget build(BuildContext context) {
     return SafeArea(child: Scaffold(
-      body:  Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 10),
+      resizeToAvoidBottomInset: true,
+      body:Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 10),
       child: GestureDetector(
-      onTap: (){
-      FocusScope.of(context).unfocus();
-      },
-        child:list.isEmpty? Stack(
-          children: [
-            Center(child: Text("không có thông báo",style: TextStyle(fontSize: 20),),),
-            isNoTi ?Align(
-              alignment: Alignment.bottomCenter,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.transparent,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(5)),
-                  ),
-                ),
-                onPressed: ()  {
-                  sendNotification();
-                }, child: Text("gửi thông báo"),),
-            ):Container()
-          ],
-        ): Container(
-        height: MediaQuery.of(context).size.height,
-        color:Colors.transparent,
+        onTap: (){
+          FocusScope.of(context).unfocus();
+        },
+        onDoubleTap: (){
+          setState(() {
+            visibleInputNoTi = false;
+            _isBottomSheetVisible = true;
+            irError  = false;
+            controllerKey.clear();
+            controllerTitle.clear();
+            controllerContent.clear();
+          });
+          if(_isBottomSheetVisible){
+            _showBottomSheet(context);
+          }
+
+        },
+        child:list.isEmpty? Center(child: Text("không có thông báo",style: TextStyle(fontSize: 20),),): Container(
+          height: MediaQuery.of(context).size.height,
+          color:Colors.transparent,
           child: Stack(
             children: [
               ListView.builder(
@@ -292,23 +480,11 @@ class _NotifityPageState extends State<NotifityPage> {
                 )
                     : Container(),
               ),
-              isNoTi?Align(
-                alignment: Alignment.bottomCenter,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(5)),
-                    ),
-                  ),
-                  onPressed: ()  {
-                    sendNotification();
-                  }, child: Text("gửi thông báo"),),
-              ):Container()
             ],
           ),
         ),
       ),
-    )));
+    ),
+    ));
   }
 }

@@ -663,8 +663,7 @@ class _CauHoiState extends State<CauHoi> {
                  if (questions[_currentIndex].type == "choose")
                    _generateOptions_choose(widget.type),
                  if (questions[_currentIndex].type == "text" ||
-                     questions[_currentIndex].type == "image" ||
-                     questions[_currentIndex].type == "text_answer")
+                     questions[_currentIndex].type == "image" )
                    ..._generateOptions(
                        questions[_currentIndex].correctAnswer,widget.type),
                  if (questions[_currentIndex].type == "sound")
@@ -684,10 +683,10 @@ class _CauHoiState extends State<CauHoi> {
 // câu hỏi chọn đấp án đúng
   List<Widget> _generateOptions(String correctAnswer,String type) {
     List<String> options = [];
-    if(questions[_currentIndex].type == "text_answer"){
-       options = questions[_currentIndex].options;
+    options = [questions[_currentIndex].correctAnswer];
+    if(questions[_currentIndex].options.isNotEmpty){
+       options.addAll(questions[_currentIndex].options);
     }else{
-       options = [questions[_currentIndex].correctAnswer];
       options.addAll(_getRandomAnswers(3));
     }
 
@@ -1238,13 +1237,11 @@ class _CauHoiState extends State<CauHoi> {
           if (item != null) {
             // Tạo một đối tượng Question từ dữ liệu Firebase và thêm vào danh sách
             Question question = Question(
-              id: item['id'].toString(),
-              correctAnswer: item['correctAnswer'].toString(),
-              type: item['type'] !=null ?item['type'].toString():"text",
-              questionText: item['questionText'].toString(),
-              imageContent: item['imageContent'] != null
-                  ? item['imageContent'].toString()
-                  : '',
+                id: item['id']!=null?item['id'].toString():"",
+                correctAnswer: item['correctAnswer']!=null?item['correctAnswer'].toString():"",
+                type: item['type'] !=null ?item['type'].toString():"text",
+                questionText: item['questionText']!=null?item['questionText'].toString():"",
+                imageContent: item['imageContent'] != null ? item['imageContent'].toString() : '',
                 options: item['options'] != null ? List<String>.from(item['options'] ?? []):[]
             );
             listQ.add(question);

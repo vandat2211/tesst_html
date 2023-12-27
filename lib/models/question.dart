@@ -19,9 +19,9 @@ class Question {
       id: json['id'] ?? '',
       questionText: json['questionText'] ?? '',
       correctAnswer: json['correctAnswer'] ?? '',
-      imageContent: json['imageContent'],
-      type: json['type'],
-      options: List<String>.from(json['options'] ?? []),
+      imageContent: json['imageContent'] ?? '',
+      type: json['type'] ?? 'text',
+      options:json['options']!=null? List<String>.from(json['options'] ?? []):[],
     );
   }
 
