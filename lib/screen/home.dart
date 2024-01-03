@@ -329,7 +329,7 @@ class _HomePageState extends State<HomePage> {
                 crossAxisCellCount: 2,
                 mainAxisCellCount: 1,
                 child: flipCard("DHBC siêu tốc",(){
-                  getDataFromFirebase('ListQuestion/Question0/',(){
+                  getDataFromFirebase('ListQuestion/QuestionDHBCST/',(){
                       print("vao day3");
                       Navigator.push(
                         context,
