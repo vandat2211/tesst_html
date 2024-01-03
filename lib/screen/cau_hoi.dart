@@ -1032,6 +1032,7 @@ class _CauHoiState extends State<CauHoi> {
           isFirstTime = false;
       }
     }else{
+      options_SapXep = questions[_currentIndex].correctAnswer.split(' ');
       options_SapXep.shuffle();
     }
     return Column(
