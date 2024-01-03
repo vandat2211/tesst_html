@@ -45,7 +45,6 @@ Future<void> main() async {
   FirebaseMessaging.onBackgroundMessage(fcmBackgroundMessageHandler);
   SharedPreferences pref = await SharedPreferences.getInstance();
   String id =  pref.getString("id")??"";
-  pref.remove("leverEL");
     runApp( MyApp(check:id.isNotEmpty?true:false ,));
   // Initialize the workmanager plugin
   Workmanager().initialize(
@@ -63,7 +62,7 @@ Future<void> main() async {
     // Set the frequency to 24 hours
     frequency: Duration(hours: 24),
     // Set the initial delay to 8 hours
-    initialDelay: Duration(hours: 8),
+    initialDelay: Duration(hours: 10),
     // Set the constraints for the task
     constraints: Constraints(
       networkType: NetworkType.connected,

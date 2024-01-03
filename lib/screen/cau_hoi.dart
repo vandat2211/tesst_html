@@ -39,6 +39,9 @@ class _CauHoiState extends State<CauHoi> {
   late Timer _timer;
   int leverEL = 0;
   int leverDHBC = 0;
+  bool isFirstTime = true;
+  List<String> options_dapan = [];
+  List<String> options_SapXep = [];
   final List<String> _answers = [
     '4',
     'Paris',
@@ -682,19 +685,32 @@ class _CauHoiState extends State<CauHoi> {
 
 // câu hỏi chọn đấp án đúng
   List<Widget> _generateOptions(String correctAnswer,String type) {
-    List<String> options = [];
-    options = [questions[_currentIndex].correctAnswer];
-    if(questions[_currentIndex].options.isNotEmpty){
-       options.addAll(questions[_currentIndex].options);
+    if(type =="STT"){
+      if(isFirstTime){
+        options_dapan = [questions[_currentIndex].correctAnswer];
+        if(questions[_currentIndex].options.isNotEmpty){
+          options_dapan.addAll(questions[_currentIndex].options);
+        }else{
+          options_dapan.addAll(_getRandomAnswers(3));
+        }
+        options_dapan.shuffle();
+        isFirstTime = false;
+      }
     }else{
-      options.addAll(_getRandomAnswers(3));
+      options_dapan = [questions[_currentIndex].correctAnswer];
+      if(questions[_currentIndex].options.isNotEmpty){
+        options_dapan.addAll(questions[_currentIndex].options);
+      }else{
+        options_dapan.addAll(_getRandomAnswers(3));
+      }
+      options_dapan.shuffle();
     }
 
 
-    // Sắp xếp ngẫu nhiên lại các đáp án
-    options.shuffle();
 
-    return options.map((option) {
+
+
+    return options_dapan.map((option) {
       return ElevatedButton(
         onPressed: () async {
           // Xử lý khi người dùng chọn câu trả lời
@@ -1009,14 +1025,21 @@ class _CauHoiState extends State<CauHoi> {
 
   // cau hỏi sắp xếp
   Widget _generateOptions_sort(String type) {
-    List<String> options = questions[_currentIndex].correctAnswer.split(' ');
-    options.shuffle();
+    if(type == "STT"){
+      if(isFirstTime){
+        options_SapXep = questions[_currentIndex].correctAnswer.split(' ');
+        options_SapXep.shuffle();
+          isFirstTime = false;
+      }
+    }else{
+      options_SapXep.shuffle();
+    }
     return Column(
       children: [
         Wrap(
           spacing: 8.0, // Khoảng cách giữa các nút theo chiều ngang
           runSpacing: 8.0, // Khoảng cách giữa các dòng nút theo chiều dọc
-          children: options.map((option) {
+          children: options_SapXep.map((option) {
             return Text(
               "$option /",
               style: TextStyle(fontSize: 18),
