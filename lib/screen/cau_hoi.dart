@@ -34,6 +34,8 @@ class _CauHoiState extends State<CauHoi> {
   List<String> answers = [];
   List<String> list = [];
   List<String> list1 = [];
+  List<String> list3 = [];
+  List<String> list4 = [];
   late int point;
   late int _secondsRemaining; // 3 minutes = 180 seconds
   late Timer _timer;
@@ -905,8 +907,8 @@ class _CauHoiState extends State<CauHoi> {
         .replaceAll(' ', '').split("");
     List<String> options = listOptions.map((char) => char.toUpperCase())
         .toList();
-    List<String> emptyList = List.filled(options.length-list.length, '');
-    if (list1.isEmpty) {
+    List<String> emptyList = List.filled(options.length-list3.length, '');
+    if (list4.isEmpty) {
       // Thêm 5 ký tự hoa ngẫu nhiên từ 'A' đến 'Z' vào danh sách ban đầu
       for (int i = 0; i < 5; i++) {
         int randomNumber = Random().nextInt(26); // Số ngẫu nhiên từ 0 đến 25
@@ -916,19 +918,19 @@ class _CauHoiState extends State<CauHoi> {
       }
       // Sắp xếp ngẫu nhiên lại từ trong chuỗi
       options.shuffle();
-      list1.addAll(options);
+      list4.addAll(options);
     }
     return Column(
       children: [
         Wrap(
           spacing: 8.0, // Khoảng cách giữa các nút theo chiều ngang
           runSpacing: 8.0, // Khoảng cách giữa các dòng nút theo chiều dọc
-          children: [...list.map((option) {
+          children: [...list3.map((option) {
             return ElevatedButton(
               onPressed: () {
                 setState(() {
-                  list1.add(option);
-                  list.remove(option);
+                  list4.add(option);
+                  list3.remove(option);
                 });
               },
               child: Text(option),
@@ -948,7 +950,7 @@ class _CauHoiState extends State<CauHoi> {
         Wrap(
           spacing: 8.0, // Khoảng cách giữa các nút theo chiều ngang
           runSpacing: 8.0, // Khoảng cách giữa các dòng nút theo chiều dọc
-          children: list1.map((option) {
+          children: list4.map((option) {
             List<String> listOptions = questions[_currentIndex].correctAnswer
                 .replaceAll(' ', '').split("");
             List<String> options = listOptions.map((char) => char.toUpperCase())
@@ -958,18 +960,18 @@ class _CauHoiState extends State<CauHoi> {
             return ElevatedButton(
               onPressed: () async {
                 setState(() {
-                  list.add(option);
-                  print("list: $list");
-                  list1.remove(option);
+                  list3.add(option);
+                  print("list: $list3");
+                  list4.remove(option);
                 });
-                String combinedWords = list.join();
+                String combinedWords = list3.join();
                 print("combinedWords:${combinedWords}");
                   if (combinedWords == answer) {
                     setState(() {
                       _correctAnswers++;
                       _currentIndex++;
-                      list1.clear();
-                      list.clear();
+                      list4.clear();
+                      list3.clear();
                       choose_dhbc = false;
 
                     });
@@ -1011,8 +1013,8 @@ class _CauHoiState extends State<CauHoi> {
                       }
                     });
                     _showDialog(context, false);
-                    list1.clear();
-                    list.clear();
+                    list4.clear();
+                    list3.clear();
                   }
               },
               child: Text(option),

@@ -172,13 +172,38 @@ class _ProFileScreenState extends State<ProFileScreen> {
                     ),
                     SizedBox(width: 20,),
                     Container(
-                      height: 50,
+
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(name,style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
-                          Text(point,style: TextStyle(fontSize: 15,color: Colors.redAccent,fontWeight: FontWeight.bold),)
+                          Text("User: $name",style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
+                          RichText(
+                            text:  TextSpan(
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold
+                              ),
+                              children: <TextSpan>[
+                                TextSpan(
+                                  text: "Point: ",
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color:Colors.black
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: point,
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color:Colors.redAccent
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
                     )
