@@ -76,11 +76,11 @@ class _ProFileScreenState extends State<ProFileScreen> {
 
     });
 
-    print("English : ${count}");
-    print("image_dhbc : ${(count2/total)*100}");
-    print("dhbc : ${(count3/total)*100}");
-    print("STT : ${(count4/total)*100}");
-    print("SGH : ${(count5/total)*100}");
+    print("English : $count---- ${(count/total)*100}");
+    print("image_dhbc $count2:---- ${(count2/total)*100}");
+    print("dhbc : $count3------${(count3/total)*100}");
+    print("STT $count4 -------: ${(count4/total)*100}");
+    print("SGH  $count5 -------: ${(count5/total)*100}");
   }
   Future<void> getDLLineChart() async {
     // Lấy số tuần hiện tại

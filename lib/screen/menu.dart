@@ -46,7 +46,6 @@ class _EntryPointState extends State<MenuScreen> {
   Future<void> getData() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     String id =  pref.getString("id")??"";
-    DateTime now = DateTime.now();
     // Lấy số tuần hiện tại
     int weekNumber = DateTime.now().weekOfYear;
     int week =  pref.getInt("week")??0;

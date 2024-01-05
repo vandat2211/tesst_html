@@ -13,6 +13,7 @@ import 'package:tesst_html/screen/sieuGhepHinh.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'cau_hoi.dart';
 import '../models/question.dart';
+import 'package:week_of_year/week_of_year.dart';
 class HomePage extends StatefulWidget {
    HomePage({super.key,});
   @override
@@ -72,7 +73,9 @@ class _HomePageState extends State<HomePage> {
     _timer2?.cancel();
   }
   getLever() async {
+    int weekNumber =  DateTime.now().weekOfYear;
     SharedPreferences pref = await SharedPreferences.getInstance();
+    await pref.setInt("week", weekNumber);
     int randomNumber = pref.getInt("leverEL")??0;
     int leverDBHC = pref.getInt("leverDBHC")??0;
     setState(() {

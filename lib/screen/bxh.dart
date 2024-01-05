@@ -150,10 +150,10 @@ class _BxhScreenState extends State<BxhScreen> {
                       margin: EdgeInsets.all(8),
                       child: ListTile(
                         leading: Container(
-                          width: 120,
+                          width: 130,
                           child: Row(
                             children: [
-                              Container(width:25,child: Text("${index+1}",style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold,color:index == 0? Colors.redAccent:index == 1?Colors.blueAccent:index == 2?Colors.teal:Colors.black),)),
+                              Container(width:30,child: Text("${index+1}",style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold,color:index == 0? Colors.redAccent:index == 1?Colors.blueAccent:index == 2?Colors.teal:Colors.black),)),
                             SizedBox(width: 10,),
                               VerticalDivider(color: Colors.teal,),
                               SizedBox(width: 5,),
